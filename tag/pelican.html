@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Articles in pelican tag - Eureka</title>
+        <meta charset="utf-8" />
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="http://nanadair.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="http://nanadair.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Eureka Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="http://nanadair.github.io">Home</a></li>
+                    <li><a href="http://nanadair.github.io/pages/about.html">about</a></li>
+                    <li class="active"active><a href="http://nanadair.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="http://nanadair.github.io">Eureka</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="content">
+<h2>Articles with the pelican tag</h2>
+
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="http://nanadair.github.io/bo-ke-da-jian.html" rel="bookmark" title="Permalink to 博客搭建">博客搭建</a></h2> </header>
+                <div class="entry-content"> <!--Slug:-->
+
+<h2>pelican 简介</h2>
+<p>之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
+。后来突然发现这个用python写的博客生成工具，虽然感觉管理没有前两者那么方便，不过因为
+python自己比较熟悉，方便hack，所以就选择它来重新搭起来自己的博客。</p>
+<p>当然，写博客的才是最关键的啦！</p>
+<h2>搭建过程及创建文章</h2>
+<h3>安装过程</h3>
+<div class="highlight"><pre><span class="n">pip</span> <span class="n">install</span> <span class="n">pelican</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">Markdown</span>
+</pre></div>
+
+
+<h3>Configuration</h3>
+<p>Just follow the promption.</p>
+<h3>博客架构</h3>
+<div class="highlight"><pre><span class="n">blog</span><span class="o">/</span>
+<span class="err">├──</span> <span class="n">content</span>              <span class="err">#</span> <span class="err">存放输入的源文件</span>
+<span class="err">│</span>   <span class="err">└──</span> <span class="p">(</span><span class="n">pages</span><span class="p">)</span>          <span class="err">#</span> <span class="err">存放手工创建的静态页面</span>
+<span class="err">├──</span> <span class="n">output</span>               <span class="err">#</span> <span class="err">生成的输出文件</span>
+<span class="err">├──</span> <span class="n">develop_server</span><span class="p">.</span><span class="n">sh</span>    <span class="err">#</span> <span class="n">make</span> <span class="n">devserver</span>
+<span class="err">├──</span> <span class="n">Makefile</span>             <span class="err">#</span> <span class="err">方便管理博客的</span><span class="n">Makefile</span>
+<span class="err">├──</span> <span class="n">pelicanconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主配置文件</span>
+<span class="err">└──</span> <span class="n">publishconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主发布文件</span>
+</pre></div>
+
+
+<h3>放github</h3>
+<div class="highlight"><pre><span class="n">cd ...</span></pre></div></!--slug:--> </div><!-- entry-content -->
+        </article>
+<div class="pager">
+      <ul>
+                        <li class="previous disabled"><a>← Previous</a></li>
+                        <li class="next disabled"><a>Next →</a></li>
+      </ul>
+    </div>
+</section><!-- content -->
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="http://nanadair.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="http://nanadair.github.io">Eureka</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    </body>
+</html>

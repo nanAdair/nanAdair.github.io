@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Arch安装配置 - Eureka</title>
+        <meta charset="utf-8" />
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="http://nanadair.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="http://nanadair.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Eureka Full Atom Feed" />
+        <link href="http://nanadair.github.io/feeds/tech.atom.xml" type="application/atom+xml" rel="alternate" title="Eureka Categories Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="http://nanadair.github.io">Home</a></li>
+                    <li><a href="http://nanadair.github.io/pages/about.html">about</a></li>
+                    <li><a href="http://nanadair.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="http://nanadair.github.io">Eureka</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="http://nanadair.github.io/archan-zhuang-pei-zhi.html" rel="bookmark"
+         title="Permalink to Arch安装配置">Arch安装配置</a></h2>
+ 
+  </header>
+  
+     
+  <div class="entry-content">
+    <p>使用archlinux大概也有一年多的时间了，之间安装系统这件事估计两只手已经数不过来了。不过
+倒不是因为arch会经常崩，反而只要每天升级前看一下arch官网挂出来的提示，一般都没有遇到
+大的升级后无法正常使用的情况。第一次安装配置的时候要花一两天的时间，而现在基本半个
+钟就可以完成安装和基本配置的工作了，不过每次安装都要参考官网的<a href="https://wiki.archlinux.org/index.php/Beginners'_guide">Beginners' guide</a>
+。所以，要好好把这个流程梳理出来，形成一篇自己的Beginners' guide吧。</p>
+<h1>准备阶段</h1>
+<p>每次安装采用的都是U盘安装，U盘安装比较方便易行，不受什么其他的限制吧。整个操作也是非
+常简单的。只需要简单的<code>dd</code>就可以了。</p>
+<div class="highlight"><pre><span class="n">dd</span> <span class="k">if</span><span class="o">=</span><span class="n">archlinux</span><span class="p">.</span><span class="n">iso</span> <span class="n">of</span><span class="o">=/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdX</span>
+</pre></div>
+
+
+<h1>安装阶段</h1>
+<p>和一般的操作系统安装的流程类似，arch的安装也是要分区，拷贝系统，进行配置的操作。不过
+这些操作中在其他的操作系统的安装过程中会通过和用户的交互来进行，而arch的安装则是要自
+己输入命令来完成了。</p>
+<h2>基本安装</h2>
+<p>用制作好的U盘系统盘启动，会进入到一个root登录的小的arch系统。我们就在这个系统下进行对
+自己的硬盘上的系统的安装。</p>
+<h3>配置网络</h3>
+<p>进入了小的arch系统后，这个系统是没有联网的，也不会像平常的系统那样会自动连接无线热点
+，而且没有图形界面，所以就需要自己配置网络。对了，当然如果你的上网方式是dhcp，那就方
+便地可以省略网络配置这一项了。因为我都是给笔记本安装arch系统，直接用无线热点，所以这里
+就只写一下无线的配置方法了。</p>
+<p>首先查看你的无线设备的接口名称：</p>
+<div class="highlight"><pre><span class="n">ip</span> <span class="n">link</span>
+<span class="o">---</span>
+<span class="mi">1</span><span class="o">:</span> <span class="n">lo</span><span class="o">:</span> <span class="o">&lt;</span><span class="n">LOOPBACK</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">LOWER_UP</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">65536</span> <span class="n">qdisc</span> <span class="n">noqueue</span> <span class="n">state</span> <span class="n">UNKNOWN</span> <span class="n">mode</span> <span class="n">DEFAULT</span> <span class="n">group</span> <span class="k">default</span> <span class="n">link</span><span class="o">/</span><span class="n">loopback</span> <span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span> <span class="n">brd</span> <span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span>
+<span class="mi">2</span><span class="o">:</span> <span class="n">enp3s0</span><span class="o">:</span> <span class="o">&lt;</span><span class="n">BROADCAST</span><span class="p">,</span><span class="n">MULTICAST</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">1500</span> <span class="n">qdisc</span> <span class="n">noop</span> <span class="n">state</span> <span class="n">DOWN</span> <span class="n">mode</span> <span class="n">DEFAULT</span> <span class="n">group</span> <span class="k">default</span> <span class="n">qlen</span> <span class="mi">1000</span> <span class="n">link</span><span class="o">/</span><span class="n">ether</span> <span class="mi">20</span><span class="o">:</span><span class="mi">1</span><span class="n">a</span><span class="o">:</span><span class="mo">06</span><span class="o">:</span><span class="n">c5</span><span class="o">:</span><span class="n">ee</span><span class="o">:</span><span class="mi">11</span> <span class="n">brd</span> <span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span>
+<span class="mi">3</span><span class="o">:</span> <span class="n">wlp4s0</span><span class="o">:</span> <span class="o">&lt;</span><span class="n">BROADCAST</span><span class="p">,</span><span class="n">MULTICAST</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">LOWER_UP</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">1500</span> <span class="n">qdisc</span> <span class="n">mq</span> <span class="n">state</span> <span class="n">UP</span> <span class="n">mode</span> <span class="n">DORMANT</span> <span class="n">group</span> <span class="k">default</span> <span class="n">qlen</span> <span class="mi">1000</span> <span class="n">link</span><span class="o">/</span><span class="n">ether</span> <span class="n">ac</span><span class="o">:</span><span class="mi">7</span><span class="n">b</span><span class="o">:</span><span class="n">a1</span><span class="o">:</span><span class="mi">52</span><span class="o">:</span><span class="mi">09</span><span class="o">:</span><span class="n">b3</span> <span class="n">brd</span> <span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span>
+</pre></div>
+
+
+<p>一般情况下w开头的名字就是你需要的接口名了</p>
+<p>打开无线接口：</p>
+<div class="highlight"><pre><span class="n">ip</span> <span class="n">link</span> <span class="n">set</span> <span class="n">wlp4s0</span> <span class="n">up</span>
+</pre></div>
+
+
+<p>检测接口是否已经启用：</p>
+<div class="highlight"><pre><span class="n">ip</span> <span class="n">link</span> <span class="n">show</span> <span class="n">wlp4s0</span>
+<span class="o">---</span>
+<span class="mi">3</span><span class="o">:</span> <span class="n">wlp4s0</span><span class="o">:</span> <span class="o">&lt;</span><span class="n">BROADCAST</span><span class="p">,</span><span class="n">MULTICAST</span><span class="p">,</span><span class="n">UP</span><span class="p">,</span><span class="n">LOWER_UP</span><span class="o">&gt;</span> <span class="n">mtu</span> <span class="mi">1500</span> <span class="n">qdisc</span> <span class="n">mq</span> <span class="n">state</span> <span class="n">UP</span> <span class="n">mode</span> <span class="n">DORMANT</span> <span class="n">group</span> <span class="k">default</span> <span class="n">qlen</span> <span class="mi">1000</span> <span class="n">link</span><span class="o">/</span><span class="n">ether</span> <span class="n">ac</span><span class="o">:</span><span class="mi">7</span><span class="n">b</span><span class="o">:</span><span class="n">a1</span><span class="o">:</span><span class="mi">52</span><span class="o">:</span><span class="mi">09</span><span class="o">:</span><span class="n">b3</span> <span class="n">brd</span> <span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span><span class="o">:</span><span class="n">ff</span>
+</pre></div>
+
+
+<p>像上面如果出现出现了<code>UP</code>字样表示已经可用了。</p>
+<p>用<code>wifi-menu</code>进行网络连接：</p>
+<div class="highlight"><pre><span class="n">wifi</span><span class="o">-</span><span class="n">menu</span> <span class="n">wlp4s0</span>
+</pre></div>
+
+
+<h3>设置分区</h3>
+<p>虽然之前搞过一段时间的grub，不过UEFI出来后还没有详细地了解。等以后再写一篇详细的有关
+启动的东西吧。</p>
+<p>我在这里使用的是cgdisk进行分区</p>
+<div class="highlight"><pre><span class="n">cgdisk</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda</span>
+</pre></div>
+
+
+<p>分区结果如下：</p>
+<div class="highlight"><pre><span class="n">Device</span>           <span class="n">Start</span>          <span class="n">End</span>   <span class="n">Size</span> <span class="n">Type</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda1</span>         <span class="mi">2048</span>      <span class="mi">1050623</span>   <span class="mi">512</span><span class="n">M</span> <span class="n">EFI</span> <span class="n">System</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda2</span>      <span class="mi">1050624</span>    <span class="mi">105908223</span>    <span class="mi">50</span><span class="n">G</span> <span class="n">Linux</span> <span class="n">filesystem</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda3</span>    <span class="mi">105908224</span>    <span class="mi">972031999</span>   <span class="mi">413</span><span class="n">G</span> <span class="n">Linux</span> <span class="n">filesystem</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda4</span>    <span class="mi">972032000</span>    <span class="mi">976773134</span>   <span class="mf">2.3</span><span class="n">G</span> <span class="n">Linux</span> <span class="n">filesystem</span>
+</pre></div>
+
+
+<p>创建文件系统：</p>
+<div class="highlight"><pre><span class="n">mkfs</span><span class="p">.</span><span class="n">fat</span> <span class="o">-</span><span class="n">F32</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda1</span>
+<span class="n">mkfs</span><span class="p">.</span><span class="n">ext4</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda2</span>
+<span class="n">mkfs</span><span class="p">.</span><span class="n">ext4</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda3</span>
+<span class="n">mkswap</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda4</span>
+<span class="n">swapon</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda4</span>
+</pre></div>
+
+
+<p>其中第一个分区是UEFI主板的需求，具体什么原因就不明白了。</p>
+<h3>挂载分区</h3>
+<p>查看当前分区的情况：</p>
+<div class="highlight"><pre><span class="n">lsblk</span> <span class="o">-</span><span class="n">f</span>
+</pre></div>
+
+
+<p>挂载根分区到/mnt：</p>
+<div class="highlight"><pre><span class="n">mount</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda2</span> <span class="o">/</span><span class="n">mnt</span>
+</pre></div>
+
+
+<p>挂载其他分区：</p>
+<div class="highlight"><pre><span class="n">mkdir</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">home</span>
+<span class="n">mount</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda3</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">home</span>
+
+<span class="n">mkdir</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">boot</span>
+<span class="n">mount</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda1</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">boot</span>
+</pre></div>
+
+
+<h3>选择镜像</h3>
+<p>最重要的一步，网速可是第一生产力啊！当我大中大也有了自己的源的时候，速度真是快到飞起
+了。同时教育网推荐清华的源，其他用163的也不错。</p>
+<div class="highlight"><pre><span class="n">vi</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">pacman</span><span class="p">.</span><span class="n">d</span><span class="o">/</span><span class="n">mirrorlist</span>
+
+<span class="n">pacman</span> <span class="o">-</span><span class="n">Syy</span>
+</pre></div>
+
+
+<h3>安装基本系统</h3>
+<p>基本系统是通过arch的<code>pacstrap</code>脚本来进行的，也是一句话搞掂</p>
+<div class="highlight"><pre><span class="n">pacstrap</span> <span class="o">-</span><span class="n">i</span> <span class="o">/</span><span class="n">mnt</span> <span class="n">base</span> <span class="n">base</span><span class="o">-</span><span class="n">devel</span>
+</pre></div>
+
+
+<h3>生成fstab</h3>
+<p>/etc/fstab是用来定义分区以及块设备如何挂载到文件系统的。当你的磁盘分区挂载到了某个目
+录下的时候你才可以去访问磁盘里的内容。因此就需要去生成fstab的内容。以让系统启动是自动
+挂载相关的分区。</p>
+<div class="highlight"><pre><span class="n">genfstab</span> <span class="o">-</span><span class="n">U</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">mnt</span> <span class="o">&gt;&gt;</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">fstab</span>
+</pre></div>
+
+
+<h2>基本配置</h2>
+<p>在完成了以上步骤后，一个基本的arch操作系统已经安装在你的硬盘上了。并且硬盘上划分的各
+个分区被挂载在U盘中arch系统的/mnt的目录下。所以要进行对新的系统的配置，就要先进入到新
+的系统中去。当然直接启动进入配置是可以的，也可以在当前的系统中利用chroot去对新的系统
+进行配置。</p>
+<h3>Locale</h3>
+<p>Locale是和地区相关的设置信息，如果不正确设置的话最直接的是字体会出现问题。当然还会有
+其他时间，货币等相关的信息会出错。我们在这里需要修改两个文件，都是在/etc下面。
+<code>locale.gen</code>和<code>locale.conf</code>。取消掉相关行的注释即可。然后运行：</p>
+<div class="highlight"><pre><span class="n">locale</span><span class="o">-</span><span class="n">gen</span>
+
+<span class="n">echo</span> <span class="n">LANG</span><span class="o">=</span><span class="n">en_US</span><span class="p">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">locale</span><span class="p">.</span><span class="n">conf</span>
+</pre></div>
+
+
+<h3>Time Zone</h3>
+<p>时区信息只需要创建一个文件软连接即可</p>
+<div class="highlight"><pre><span class="nx">ln</span> <span class="na">-s</span> <span class="p">/</span><span class="nx">usr</span><span class="p">/</span><span class="nx">share</span><span class="p">/</span><span class="nx">zoneinfo</span><span class="o">/&lt;</span><span class="nx">Zone</span><span class="o">&gt;/&lt;</span><span class="nx">SubZone</span><span class="o">&gt;</span> <span class="p">/</span><span class="nx">etc</span><span class="p">/</span><span class="nx">localtime</span>
+</pre></div>
+
+
+<h3>Hardware Clock</h3>
+<p>硬件时钟模式。在双系统的时候系统时钟可能会出错。这里注意相应的bios里面的时钟要设置成
+utc的时间。</p>
+<div class="highlight"><pre><span class="n">hwclock</span> <span class="o">--</span><span class="n">systohc</span> <span class="o">--</span><span class="n">utc</span>
+</pre></div>
+
+
+<h3>Hostname</h3>
+<p>hostname是你的计算机的一个身份标识。</p>
+<div class="highlight"><pre><span class="n">echo</span> <span class="n">myhostname</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">hostname</span>
+</pre></div>
+
+
+<h3>Configure the network</h3>
+<p>前面安装的base与base-devel包里面会缺少一些网络管理的软件，所以在现在还有网络连接的时
+候要把连接网络相关的软件都安装好。使用系统自带的netctl现在已经可以完成网络连接的任务
+了。</p>
+<p>我在这里使用wifi-menu来进行连接，所以需要安装依赖</p>
+<div class="highlight"><pre><span class="n">pacman</span> <span class="o">-</span><span class="n">S</span> <span class="n">dialog</span>
+</pre></div>
+
+
+<p>arch的网络连接管理也是一个值得再讨论一下的地方吧。图形界面下还可以用NetworkMananger来
+管理，传统的鼠标操作。</p>
+<h3>Set root password</h3>
+<p>这一步必须进行，否则重启进入系统后无法登录了</p>
+<div class="highlight"><pre><span class="n">passwd</span>
+</pre></div>
+
+
+<h3>Install and configure a bootloader</h3>
+<p>grub的工作原理之前简单了解过。基本就是每个阶段把相应的文件加载到内存中去。而因为新的
+GPT的出现，我这次安装也改用了gummiboot来引导。就只记录下安装的过程吧。这一步也是必须
+进行的。</p>
+<p>安装</p>
+<div class="highlight"><pre><span class="n">mount</span> <span class="o">-</span><span class="n">t</span> <span class="n">efivarfs</span> <span class="n">efivarfs</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">firmware</span><span class="o">/</span><span class="n">efi</span><span class="o">/</span><span class="n">efivars</span> <span class="err">#</span> <span class="n">may</span> <span class="n">can</span> <span class="n">be</span> <span class="n">ignored</span>
+<span class="n">pacman</span> <span class="o">-</span><span class="n">S</span> <span class="n">gummiboot</span>
+<span class="n">gummiboot</span> <span class="n">install</span>
+</pre></div>
+
+
+<p>创建配置文件</p>
+<div class="highlight"><pre><span class="n">vi</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">loader</span><span class="o">/</span><span class="n">entries</span><span class="o">/</span><span class="n">arch</span><span class="p">.</span><span class="n">conf</span>
+<span class="o">---</span>
+<span class="n">title</span> <span class="n">Arch</span> <span class="n">Linux</span>
+<span class="n">linux</span> <span class="o">/</span><span class="n">vmlinuz</span><span class="o">-</span><span class="n">linux</span>
+<span class="n">initrd</span> <span class="o">/</span><span class="n">initramfs</span><span class="o">-</span><span class="n">linux</span><span class="p">.</span><span class="n">img</span>
+<span class="n">options</span> <span class="n">root</span><span class="o">=/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda2</span> <span class="n">rw</span> <span class="n">quiet</span>
+</pre></div>
+
+
+<h3>exit, reboot and a new archlinux is coming</h3>
+<p>从当前环境下退出：</p>
+<div class="highlight"><pre><span class="n">exit</span>
+</pre></div>
+
+
+<p>卸载挂载分区：</p>
+<div class="highlight"><pre><span class="n">umount</span> <span class="o">-</span><span class="n">R</span> <span class="o">/</span><span class="n">mnt</span> <span class="err">#</span> <span class="n">R</span> <span class="n">means</span> <span class="n">recursive</span>
+</pre></div>
+
+
+<p>重启：</p>
+<div class="highlight"><pre><span class="n">reboot</span>
+</pre></div>
+
+
+<h1>配置阶段</h1>
+<p>前面只是最基本的配置。之后对于一般工作还有许多需要配置的软件及系统配置。</p>
+<p>待续……</p>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2014-04-20T17:34:35.592253">
+      Sun 20 April 2014
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="http://nanadair.github.io/author/nan-adair.html">Nan Adair</a>
+    </address> in <a href="http://nanadair.github.io/category/tech.html">Tech</a> Tagged   </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="http://nanadair.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="http://nanadair.github.io">Eureka</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    </body>
+</html>

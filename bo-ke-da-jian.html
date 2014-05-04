@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>博客搭建 - Eureka</title>
+        <meta charset="utf-8" />
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="http://nanadair.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="http://nanadair.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Eureka Full Atom Feed" />
+        <link href="http://nanadair.github.io/feeds/tech.atom.xml" type="application/atom+xml" rel="alternate" title="Eureka Categories Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class=""><a href="http://nanadair.github.io">Home</a></li>
+                    <li><a href="http://nanadair.github.io/pages/about.html">about</a></li>
+                    <li><a href="http://nanadair.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="http://nanadair.github.io">Eureka</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="article content">
+  <header>
+    <h2 class="entry-title">
+      <a href="http://nanadair.github.io/bo-ke-da-jian.html" rel="bookmark"
+         title="Permalink to 博客搭建">博客搭建</a></h2>
+ 
+  </header>
+  
+     
+  <div class="entry-content">
+    <!--Slug:-->
+
+<h2>pelican 简介</h2>
+<p>之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
+。后来突然发现这个用python写的博客生成工具，虽然感觉管理没有前两者那么方便，不过因为
+python自己比较熟悉，方便hack，所以就选择它来重新搭起来自己的博客。</p>
+<p>当然，写博客的才是最关键的啦！</p>
+<h2>搭建过程及创建文章</h2>
+<h3>安装过程</h3>
+<div class="highlight"><pre><span class="n">pip</span> <span class="n">install</span> <span class="n">pelican</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">Markdown</span>
+</pre></div>
+
+
+<h3>Configuration</h3>
+<p>Just follow the promption.</p>
+<h3>博客架构</h3>
+<div class="highlight"><pre><span class="n">blog</span><span class="o">/</span>
+<span class="err">├──</span> <span class="n">content</span>              <span class="err">#</span> <span class="err">存放输入的源文件</span>
+<span class="err">│</span>   <span class="err">└──</span> <span class="p">(</span><span class="n">pages</span><span class="p">)</span>          <span class="err">#</span> <span class="err">存放手工创建的静态页面</span>
+<span class="err">├──</span> <span class="n">output</span>               <span class="err">#</span> <span class="err">生成的输出文件</span>
+<span class="err">├──</span> <span class="n">develop_server</span><span class="p">.</span><span class="n">sh</span>    <span class="err">#</span> <span class="n">make</span> <span class="n">devserver</span>
+<span class="err">├──</span> <span class="n">Makefile</span>             <span class="err">#</span> <span class="err">方便管理博客的</span><span class="n">Makefile</span>
+<span class="err">├──</span> <span class="n">pelicanconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主配置文件</span>
+<span class="err">└──</span> <span class="n">publishconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主发布文件</span>
+</pre></div>
+
+
+<h3>放github</h3>
+<div class="highlight"><pre><span class="n">cd</span> <span class="n">output</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">:</span><span class="n">username</span><span class="o">/</span><span class="n">username</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">git</span>
+</pre></div>
+
+
+<h3>文章的meta data:</h3>
+<div class="highlight"><pre><span class="n">Title</span><span class="o">:</span>
+<span class="n">Date</span><span class="o">:</span>
+<span class="n">Category</span><span class="o">:</span>
+<span class="n">Tags</span><span class="o">:</span>
+<span class="n">Slug</span><span class="o">:</span>
+</pre></div>
+
+
+<h3>生成blog</h3>
+<div class="highlight"><pre><span class="n">make</span> <span class="n">publish</span>
+<span class="n">make</span> <span class="n">github</span> <span class="p">(</span><span class="err">需要自行定义</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>遇到的问题及解决方法</h2>
+<ul>
+<li>pip源速度极慢，通常会timeout</li>
+</ul>
+<p>解决方法：更换数据源。网上介绍的config文件里面定义index-url，但是使用了一直没有起作用
+。后来随便改改试试，改成index_url后发现config文件可以起到作用了。</p>
+<p><a href="http://www.leadnt.com/2013/08/使用国内镜像源来加速python-pypi包的安装/">pip源设置</a></p>
+<ul>
+<li>安装pytz包出错</li>
+</ul>
+<p>解决方法：是因为版本的问题。</p>
+<div class="highlight"><pre><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">pre</span> <span class="n">pytz</span>
+</pre></div>
+
+
+<ul>
+<li>markdown文件不识别</li>
+</ul>
+<p>解决方法：因为pelican依赖一个特定的markdwon包，注意上面安装过程的命令</p>
+<ul>
+<li>将整个output文件作为git库，但是每次make publish后，output文件都会被覆盖</li>
+</ul>
+<p>解决方法：在publishconf文件中有一个选项关于publish是否要覆盖output文件的，更改即可。</p>
+<h2>Reference</h2>
+<ol>
+<li><a href="http://www.lizherui.com/pages/2013/08/17/build_blog.html">首先发现pelican的地方</a></li>
+<li><a href="http://docs.getpelican.com/en/3.2/">官网啦</a></li>
+<li><a href="http://akenzc.com/how-to-build-a-blog-with-pelican.html">另一个详细的搭建介绍</a></li>
+<li><a href="http://www.dongwm.com/archives/shi-yong-pelicanxin-de/">供参考的文章书写管理脚本</a></li>
+</ol>
+  </div><!-- /.entry-content -->
+   <footer class="post-info text-muted">
+    Posted on <abbr class="published" title="2013-09-23T00:00:00">
+      Mon 23 September 2013
+    </abbr>
+    <address class="vcard author">
+      by <a class="url fn" href="http://nanadair.github.io/author/nan-adair.html">Nan Adair</a>
+    </address> in <a href="http://nanadair.github.io/category/tech.html">Tech</a> Tagged <a href="http://nanadair.github.io/tag/blog.html">blog </a><a href="http://nanadair.github.io/tag/pelican.html">pelican </a>  </footer><!-- /.post-info -->
+</section>
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="http://nanadair.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="http://nanadair.github.io">Eureka</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    </body>
+</html>

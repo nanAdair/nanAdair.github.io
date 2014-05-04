@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-04T16:38:37+08:00</updated><entry><title>链接器的工作流程</title><link href="http://nanadair.github.io/lian-jie-qi-de-gong-zuo-liu-cheng.html" rel="alternate"></link><updated>2014-05-04T16:38:37+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2014-05-04:lian-jie-qi-de-gong-zuo-liu-cheng.html</id><summary type="html">&lt;p&gt;对链接器的研究工作源于目标代码混淆的项目。想要对二进制代码进行混淆，首先对可执行文件
+进行了评估。可执行文件的代码段的重定位已经被修复，缺少重定位信息，当在代码段里面插改
+指令的时候需要照顾到全部的重定位内容，因此混淆会有很大的限制，而且对于修改后的重定位
+的修复的正确性会是一个考验。所以混淆的对象就转向了二进制的目标代码，而想要在编译的过
+程去做一个等价变换的话，想来可行但是编译器的大黑盒实在是实力有限，我还是暂时不动这个
+方向了。于是就转向了较为简单点的，从链接过程去下手。好吧，上来就先跑题了。我是要介绍
+链接器的工作的，废话就先讲了一堆，进入正题。&lt;/p&gt;
+&lt;h2&gt;程序的编译链接过程&lt;/h2&gt;
+&lt;p&gt;拜IDE或者是gcc的功能所赐，在程序的诞生过程中最复杂的编译链接过程被隐藏在了一个按钮或
+者是一句简单的命令之下。虽然说有时并不需要去了解那么底层，使用默认配置就可以生成自己
+写的程序，但是想要理解程序到底是如何产生的，或者去调试一些库相关的错误的时候，就必须
+对程序的编译链接过程有所掌握。&lt;/p&gt;
+&lt;p&gt;整个编译链接的过程包括了预处理，编译，汇编，链接四个过程。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="GCC编译链接过程" src="http://nanadair.github.io/images/generateExeProcess.png" /&gt;&lt;/p&gt;
+&lt;h3&gt;预编译&lt;/h3&gt;
+&lt;p&gt;预编译的过程就是处理源代码中以“#”开头的预编译指令。简单说就是将你在代码中为了方便编码
+的一些定义全部替换成原始的样子。对于调试宏定义相关的或者头文件包含的问题时，可以查看
+预编译后的文件。&lt;/p&gt;
+&lt;h3&gt;编译&lt;/h3&gt;
+&lt;p&gt;编译的过程包括了词法分析，语法分析，语义分析，中间代码生成几个步骤。每个方面都够一本
+书来介绍的了。编译的过程就是把你的源代码的文件翻译成了汇编指令。&lt;/p&gt;
+&lt;h3&gt;汇编&lt;/h3&gt;
+&lt;p&gt;汇编的过程比较简单。因为几乎每一条汇编指令就对应一条机器指令，因此汇编器的过程就是把
+遇到的汇编指令翻译成二进制代码即可。&lt;/p&gt;
+&lt;h3&gt;链接&lt;/h3&gt;
+&lt;p&gt;链接的过程简单地讲就是把所有输入的目标文件，静态库文件（其实也是目标文件，只是打包放
+在一起而已），还有动态库文件中的一些信息合并到一个可执行的文件中去。我们可以通过&lt;code&gt;gcc
+--verbose test.c&lt;/code&gt;来查看一下默认情况下链接器的参数&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;gcc&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;verbose&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;
+&lt;span class="o"&gt;---------------------------------------------&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;collect2&lt;/span&gt;
+&lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;hash&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;style&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="n"&gt;elf_i386&lt;/span&gt; 
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dynamic&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linker&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ld&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="mf"&gt;.2&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crt1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crti&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crtbegin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;L&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;L&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;
+&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; 
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;as&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;needed&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc_s&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;no&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;as&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;needed&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lc&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;as&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;needed&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc_s&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;no&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;as&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;needed&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crtend&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crtn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;命令参数解释：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;collect2: 这里其实就是gcc封装的一个ld&lt;/li&gt;
+&lt;li&gt;-dynamic-linker &lt;em&gt;ld-path&lt;/em&gt;: 告诉链接器动态链接器的路径&lt;/li&gt;
+&lt;li&gt;crt1.o crti.o crtbegin.o crtend.o crtn.o: 都是与运行相关的目标文件&lt;/li&gt;
+&lt;li&gt;-L&lt;em&gt;path&lt;/em&gt;: 告诉链接器应该去哪些路径下搜索静态共享库和动态共享库&lt;/li&gt;
+&lt;li&gt;-lxxx: xxx即是你的程序要链接的动态共享库或者静态共享库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我们可以把这个命令简化一下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ld&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;dynamic&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linker&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ld&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;so&lt;/span&gt;&lt;span class="mf"&gt;.2&lt;/span&gt; &lt;span class="n"&gt;crt1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;crti&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;crtbegin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc_s&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lc&lt;/span&gt; &lt;span class="n"&gt;crtend&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;crtn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对于最简单的例子，命令执行过后，经过了链接过程，就会最终生成test的可执行程序。&lt;/p&gt;
+&lt;h2&gt;链接器的起源和目标&lt;/h2&gt;
+&lt;p&gt;从上面的一个最简单的例子可以看到，链接器是工作在可执行程序生成前的最后一步的。它是这
+么的重要，但是为什么必须要链接器呢？&lt;/p&gt;
+&lt;h3&gt;为什么要有链接器&lt;/h3&gt;
+&lt;p&gt;既然是要考虑链接器的存在的必要性，那么我们可以换一个角度，考虑一下如果没有链接器，那
+么什么样的程序才可以被CPU执行呢？&lt;/p&gt;
+&lt;p&gt;比如说：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="n"&gt;nop&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="n"&gt;nop&lt;/span&gt;
+&lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="n"&gt;hlt&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;好吧，这就是个玩笑。我就是想借着说明一下如果存在这种程序的话，这样的程序会有什么样的特点:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不涉及外部调用&lt;/li&gt;
+&lt;li&gt;程序没有绝对跳转指令/或者有绝对跳转以及绝对地址引用时，程序必须加载到固定的内存空间中&lt;/li&gt;
+&lt;li&gt;程序一定是手工直接写二进制的，而且写定了就不能变了, 也就是必须自成一体&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可以看到整个程序无论从创建到运行的过程都是非常固定，死板的，而如果有了链接器的加入呢
+，即使不考虑现代编译器给我们带来的编程的便利性，单纯用机器可执行的汇编进行编程，我们
+可以获得非常多的好处。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;编写程序时可以用符号表示一个地址&lt;/li&gt;
+&lt;li&gt;编写程序时不需要考虑地址问题&lt;/li&gt;
+&lt;li&gt;可以将程序模块化&lt;/li&gt;
+&lt;li&gt;程序加载的地址空间自由&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;链接器的功能，目标&lt;/h3&gt;
+&lt;p&gt;链接器的输入是二进制的有重定位信息的目标文件，目标文件相比最终的可执行的程序来说，指
+令的结构已经确定了，而不同处只是在于一些指令内部的操作数（也就是符号的地址）还没有确
+定，这些信息会以重定位段的形式保存在目标文件中。而链接器的功能和目标用一句话来说，
+就是解决这些指令中的对符号的地址的引用，从而让可执行程序运行到该指令的时候，可以正确
+地找到需要的目标。&lt;/p&gt;
+&lt;p&gt;我们还是用一个例子来说明链接器的功能，也就是链接器都做到了什么&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mi"&gt;00000000&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="mi"&gt;55&lt;/span&gt;                      &lt;span class="nb"&gt;push&lt;/span&gt;   &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;ebp&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="mi"&gt;89&lt;/span&gt; &lt;span class="nx"&gt;e5&lt;/span&gt;                   &lt;span class="nx"&gt;mov&lt;/span&gt;    &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;ebp&lt;/span&gt;
+&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="mi"&gt;83&lt;/span&gt; &lt;span class="nx"&gt;e4&lt;/span&gt; &lt;span class="nx"&gt;f0&lt;/span&gt;                &lt;span class="ow"&gt;and&lt;/span&gt;    &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mh"&gt;0xfffffff0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;
+&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="mi"&gt;83&lt;/span&gt; &lt;span class="nx"&gt;ec&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;                &lt;span class="nb"&gt;sub&lt;/span&gt;    &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mh"&gt;0x10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;
+&lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;  &lt;span class="nx"&gt;c7&lt;/span&gt; &lt;span class="mi"&gt;04&lt;/span&gt; &lt;span class="mi"&gt;24&lt;/span&gt; &lt;span class="mi"&gt;00&lt;/span&gt; &lt;span class="mi"&gt;00&lt;/span&gt; &lt;span class="mi"&gt;00&lt;/span&gt; &lt;span class="mi"&gt;00&lt;/span&gt;    &lt;span class="nx"&gt;movl&lt;/span&gt;   &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mh"&gt;0x0&lt;/span&gt;&lt;span class="p"&gt;,(&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;e8&lt;/span&gt; &lt;span class="nx"&gt;fc&lt;/span&gt; &lt;span class="nx"&gt;ff&lt;/span&gt; &lt;span class="nx"&gt;ff&lt;/span&gt; &lt;span class="nx"&gt;ff&lt;/span&gt;          &lt;span class="nb"&gt;call&lt;/span&gt;   &lt;span class="mi"&gt;11&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mh"&gt;0x11&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;c9&lt;/span&gt;                      &lt;span class="nx"&gt;leave&lt;/span&gt;  
+&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;c3&lt;/span&gt;                      &lt;span class="nx"&gt;ret&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这段汇编对应的C语言程序是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hello, world&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;当经过链接器的链接过程后，生成了最终的可执行程序，这里只贴上面对应的部分：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mi"&gt;080483&lt;/span&gt;&lt;span class="nb"&gt;fd&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="mi"&gt;80483&lt;/span&gt;&lt;span class="nb"&gt;fd&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="mi"&gt;55&lt;/span&gt;                      &lt;span class="nb"&gt;push&lt;/span&gt;   &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;ebp&lt;/span&gt;
+&lt;span class="mi"&gt;80483&lt;/span&gt;&lt;span class="nx"&gt;fe&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="mi"&gt;89&lt;/span&gt; &lt;span class="nx"&gt;e5&lt;/span&gt;                   &lt;span class="nx"&gt;mov&lt;/span&gt;    &lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;ebp&lt;/span&gt;
+&lt;span class="mi"&gt;8048400&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="mi"&gt;83&lt;/span&gt; &lt;span class="nx"&gt;e4&lt;/span&gt; &lt;span class="nx"&gt;f0&lt;/span&gt;                &lt;span class="ow"&gt;and&lt;/span&gt;    &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mh"&gt;0xfffffff0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;
+&lt;span class="mi"&gt;8048403&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="mi"&gt;83&lt;/span&gt; &lt;span class="nx"&gt;ec&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;                &lt;span class="nb"&gt;sub&lt;/span&gt;    &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mh"&gt;0x10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;
+&lt;span class="mi"&gt;8048406&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="nx"&gt;c7&lt;/span&gt; &lt;span class="mi"&gt;04&lt;/span&gt; &lt;span class="mi"&gt;24&lt;/span&gt; &lt;span class="nx"&gt;b0&lt;/span&gt; &lt;span class="mi"&gt;84&lt;/span&gt; &lt;span class="mi"&gt;04&lt;/span&gt; &lt;span class="mi"&gt;08&lt;/span&gt;    &lt;span class="nx"&gt;movl&lt;/span&gt;   &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mh"&gt;0x80484b0&lt;/span&gt;&lt;span class="p"&gt;,(&lt;/span&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="nx"&gt;esp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;804840&lt;/span&gt;&lt;span class="nb"&gt;d&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="nx"&gt;e8&lt;/span&gt; &lt;span class="nx"&gt;be&lt;/span&gt; &lt;span class="nx"&gt;fe&lt;/span&gt; &lt;span class="nx"&gt;ff&lt;/span&gt; &lt;span class="nx"&gt;ff&lt;/span&gt;          &lt;span class="nb"&gt;call&lt;/span&gt;   &lt;span class="mi"&gt;80482&lt;/span&gt;&lt;span class="nx"&gt;d0&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;puts&lt;/span&gt;&lt;span class="p"&gt;@&lt;/span&gt;&lt;span class="nx"&gt;plt&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="mi"&gt;8048412&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="nx"&gt;c9&lt;/span&gt;                      &lt;span class="nx"&gt;leave&lt;/span&gt;  
+&lt;span class="mi"&gt;8048413&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;    &lt;span class="nx"&gt;c3&lt;/span&gt;                      &lt;span class="nx"&gt;ret&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;整个可执行程序的代码段其实还有上面讲到的有关运行的各个目标文件的代码段，以及链接器构
+造的运行相关的指令。&lt;/p&gt;
+&lt;p&gt;对比前后的输入输出我们可以看到链接器做了以下事情：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;为程序分配地址空间&lt;/li&gt;
+&lt;li&gt;将符号解析成具体的指令地址或数据地址&lt;/li&gt;
+&lt;li&gt;需要重定位的地方进行修复&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;链接器的工作流程&lt;/h2&gt;
+&lt;p&gt;在介绍工作流程前，先做个说明，因为混淆相关的缘故，对链接器的研究没有覆盖到非常全面，
+能够用现有链接器实现的地方，就直接使用了，所以就没有做相应的研究。具体的地方就是对输
+入文件的处理上。&lt;/p&gt;
+&lt;p&gt;正常的链接器是可以处理多个输入文件，然后通过静态连接过程把所有的文件链接成一个单一的
+可执行文件。而我对链接器的研究是建立在特殊的输入文件上的。也就是，我研究的是已经用链
+接器链接出了一个单一的目标文件，完成了整个静态链接的流程。然后我在这个基础上，继续实
+现生成一个可执行的程序。&lt;/p&gt;
+&lt;p&gt;所以对于一个C语言程序，整个工作流程就变成了：(链接器从3开始)&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;生成.c文件对应的目标文件&lt;/li&gt;
+&lt;li&gt;用ld链接所有目标文件，将所有需要静态连接的文件链接在一起生成一个“大”的目标文件&lt;/li&gt;
+&lt;li&gt;获取目标文件的相关信息：段，符号，重定位&lt;/li&gt;
+&lt;li&gt;构建与执行相关的段&lt;/li&gt;
+&lt;li&gt;分配段地址&lt;/li&gt;
+&lt;li&gt;符号解析&lt;/li&gt;
+&lt;li&gt;重定位&lt;/li&gt;
+&lt;li&gt;创建其他运行相关的内容&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这样最终可以生成一个可执行的程序。&lt;/p&gt;
+&lt;h3&gt;构造“大”的目标文件&lt;/h3&gt;
+&lt;p&gt;通过之前&lt;code&gt;gcc --verbose&lt;/code&gt;的输出我们已经知道了gcc默认给我们都链接了哪些目标文件，因此，
+我们可以自己手动去完成这个静态链接的过程，从而生成一个“大”的目标文件。需要的操作如下
+：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ld&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crt1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crti&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crtbegin&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;L&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;L&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;L&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lgcc_eh&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;lc_nonshared&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gcc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;i686&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;pc&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gnu&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="mf"&gt;4.8.2&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crtend&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;usr&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;lib&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;crtn&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt; &lt;span class="n"&gt;obj&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;o&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;命令生成一个大的目标文件obj.o，下面我们也用obj.o来说明链接器的工作流程&lt;/p&gt;
+&lt;h3&gt;obj.o vs obj&lt;/h3&gt;
+&lt;p&gt;链接过程实际上是不需要知道你的程序的细节的，它不需要去反汇编了解你的每一条指令。链接
+的操作对象可以看作是对目标文件的每一个段进行操作。因此，我们可以通过输入文件与输出文
+件的段的内容对比来看链接器在这个过程都做了些什么操作。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="目标文件的段表" src="http://nanadair.github.io/images/obj.png" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="可执行文件的段表" src="http://nanadair.github.io/images/exe.png" /&gt;&lt;/p&gt;
+&lt;p&gt;其中可执行文件的段表是比较固定的，我们可以按照这个layout去构建相应的段。具体每个段需
+要进行的操作如下：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;em&gt;段名&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;操作&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;段名&lt;/em&gt;&lt;/th&gt;
+&lt;th&gt;&lt;em&gt;操作&lt;/em&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;.interp&lt;/td&gt;
+&lt;td&gt;自建 保存动态链接器路径&lt;/td&gt;
+&lt;td&gt;.eh_frame&lt;/td&gt;
+&lt;td&gt;改变 异常处理相关&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.note.ABI_tag&lt;/td&gt;
+&lt;td&gt;不变&lt;/td&gt;
+&lt;td&gt;.jcr&lt;/td&gt;
+&lt;td&gt;不变&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.hash&lt;/td&gt;
+&lt;td&gt;自建 动态符号名的hash&lt;/td&gt;
+&lt;td&gt;.dynamic&lt;/td&gt;
+&lt;td&gt;自建 动态链接相关&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.dynsym&lt;/td&gt;
+&lt;td&gt;自建 动态符号表&lt;/td&gt;
+&lt;td&gt;.got&lt;/td&gt;
+&lt;td&gt;自建 外部变量的地址&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.dynstr&lt;/td&gt;
+&lt;td&gt;自建 动态符号名&lt;/td&gt;
+&lt;td&gt;.got.plt&lt;/td&gt;
+&lt;td&gt;自建 外部函数地址&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.gnu.version&lt;/td&gt;
+&lt;td&gt;自建 动态符号版本号&lt;/td&gt;
+&lt;td&gt;.data&lt;/td&gt;
+&lt;td&gt;不变&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.gnu.version_r&lt;/td&gt;
+&lt;td&gt;自建 版本号要求&lt;/td&gt;
+&lt;td&gt;.bss&lt;/td&gt;
+&lt;td&gt;大小会变&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.rel.dyn&lt;/td&gt;
+&lt;td&gt;自建 .got的rel&lt;/td&gt;
+&lt;td&gt;.init_array&lt;/td&gt;
+&lt;td&gt;处理重定位&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.rel.plt&lt;/td&gt;
+&lt;td&gt;自建 .got.plt的rel&lt;/td&gt;
+&lt;td&gt;.fini_array&lt;/td&gt;
+&lt;td&gt;处理重定位&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.init&lt;/td&gt;
+&lt;td&gt;处理重定位&lt;/td&gt;
+&lt;td&gt;.commit&lt;/td&gt;
+&lt;td&gt;改变 无影响&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.plt&lt;/td&gt;
+&lt;td&gt;自建 跳转代码&lt;/td&gt;
+&lt;td&gt;.shstrtab&lt;/td&gt;
+&lt;td&gt;改变 根据段名建立&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.text&lt;/td&gt;
+&lt;td&gt;处理重定位&lt;/td&gt;
+&lt;td&gt;.symtab&lt;/td&gt;
+&lt;td&gt;改变 无影响&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.fini&lt;/td&gt;
+&lt;td&gt;处理重定位&lt;/td&gt;
+&lt;td&gt;.strtab&lt;/td&gt;
+&lt;td&gt;改变 无影响&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;.rodate&lt;/td&gt;
+&lt;td&gt;不变&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3&gt;其他需要创建的内容&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Section Header Table&lt;/li&gt;
+&lt;li&gt;Program Header&lt;/li&gt;
+&lt;li&gt;ELF File Header&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;demo的实现&lt;/h2&gt;
+&lt;p&gt;&lt;a href="//github.com/nanAdair/linker-demo"&gt;demo-linker&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Reference&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://book.douban.com/subject/3652388/"&gt;程序员的自我修养&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://book.douban.com/subject/1436811/"&gt;Linkers and Loaders&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.airs.com/blog/archives/38"&gt;One programmer who writes the golden-linker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://refspecs.linuxfoundation.org/LSB_3.2.0/LSB-Core-generic/LSB-Core-generic/symversion.html"&gt;Object files's detail
+content&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="linker"></category><category term="binary"></category><category term="linux"></category></entry><entry><title>Arch安装配置</title><link href="http://nanadair.github.io/archan-zhuang-pei-zhi.html" rel="alternate"></link><updated>2014-04-20T17:34:35+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2014-04-20:archan-zhuang-pei-zhi.html</id><summary type="html">&lt;p&gt;使用archlinux大概也有一年多的时间了，之间安装系统这件事估计两只手已经数不过来了。不过
+倒不是因为arch会经常崩，反而只要每天升级前看一下arch官网挂出来的提示，一般都没有遇到
+大的升级后无法正常使用的情况。第一次安装配置的时候要花一两天的时间，而现在基本半个
+钟就可以完成安装和基本配置的工作了，不过每次安装都要参考官网的&lt;a href="https://wiki.archlinux.org/index.php/Beginners'_guide"&gt;Beginners' guide&lt;/a&gt;
+。所以，要好好把这个流程梳理出来，形成一篇自己的Beginners' guide吧。&lt;/p&gt;
+&lt;h1&gt;准备阶段&lt;/h1&gt;
+&lt;p&gt;每次安装采用的都是U盘安装，U盘安装比较方便易行，不受什么其他的限制吧。整个操作也是非
+常简单的。只需要简单的&lt;code&gt;dd&lt;/code&gt;就可以了。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;dd&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;archlinux&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;iso&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sdX&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;安装阶段&lt;/h1&gt;
+&lt;p&gt;和一般的操作系统安装的流程类似，arch的安装也是要分区，拷贝系统，进行配置的操作。不过
+这些操作中在其他的操作系统的安装过程中会通过和用户的交互来进行，而arch的安装则是要自
+己输入命令来完成了。&lt;/p&gt;
+&lt;h2&gt;基本安装&lt;/h2&gt;
+&lt;p&gt;用制作好的U盘系统盘启动，会进入到一个root登录的小的arch系统。我们就在这个系统下进行对
+自己的硬盘上的系统的安装。&lt;/p&gt;
+&lt;h3&gt;配置网络&lt;/h3&gt;
+&lt;p&gt;进入了小的arch系统后，这个系统是没有联网的，也不会像平常的系统那样会自动连接无线热点
+，而且没有图形界面，所以就需要自己配置网络。对了，当然如果你的上网方式是dhcp，那就方
+便地可以省略网络配置这一项了。因为我都是给笔记本安装arch系统，直接用无线热点，所以这里
+就只写一下无线的配置方法了。&lt;/p&gt;
+&lt;p&gt;首先查看你的无线设备的接口名称：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ip&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt;
+&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;lo&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;LOOPBACK&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;UP&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;LOWER_UP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;mtu&lt;/span&gt; &lt;span class="mi"&gt;65536&lt;/span&gt; &lt;span class="n"&gt;qdisc&lt;/span&gt; &lt;span class="n"&gt;noqueue&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt; &lt;span class="n"&gt;UNKNOWN&lt;/span&gt; &lt;span class="n"&gt;mode&lt;/span&gt; &lt;span class="n"&gt;DEFAULT&lt;/span&gt; &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="k"&gt;default&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;loopback&lt;/span&gt; &lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt; &lt;span class="n"&gt;brd&lt;/span&gt; &lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;00&lt;/span&gt;
+&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;enp3s0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;BROADCAST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;MULTICAST&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;mtu&lt;/span&gt; &lt;span class="mi"&gt;1500&lt;/span&gt; &lt;span class="n"&gt;qdisc&lt;/span&gt; &lt;span class="n"&gt;noop&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt; &lt;span class="n"&gt;DOWN&lt;/span&gt; &lt;span class="n"&gt;mode&lt;/span&gt; &lt;span class="n"&gt;DEFAULT&lt;/span&gt; &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="k"&gt;default&lt;/span&gt; &lt;span class="n"&gt;qlen&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ether&lt;/span&gt; &lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mo"&gt;06&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;c5&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ee&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt; &lt;span class="n"&gt;brd&lt;/span&gt; &lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;
+&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;wlp4s0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;BROADCAST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;MULTICAST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;UP&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;LOWER_UP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;mtu&lt;/span&gt; &lt;span class="mi"&gt;1500&lt;/span&gt; &lt;span class="n"&gt;qdisc&lt;/span&gt; &lt;span class="n"&gt;mq&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt; &lt;span class="n"&gt;UP&lt;/span&gt; &lt;span class="n"&gt;mode&lt;/span&gt; &lt;span class="n"&gt;DORMANT&lt;/span&gt; &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="k"&gt;default&lt;/span&gt; &lt;span class="n"&gt;qlen&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ether&lt;/span&gt; &lt;span class="n"&gt;ac&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;a1&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;52&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;09&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;b3&lt;/span&gt; &lt;span class="n"&gt;brd&lt;/span&gt; &lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;一般情况下w开头的名字就是你需要的接口名了&lt;/p&gt;
+&lt;p&gt;打开无线接口：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ip&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt; &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;wlp4s0&lt;/span&gt; &lt;span class="n"&gt;up&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;检测接口是否已经启用：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;ip&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt; &lt;span class="n"&gt;show&lt;/span&gt; &lt;span class="n"&gt;wlp4s0&lt;/span&gt;
+&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;wlp4s0&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;BROADCAST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;MULTICAST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;UP&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;LOWER_UP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;mtu&lt;/span&gt; &lt;span class="mi"&gt;1500&lt;/span&gt; &lt;span class="n"&gt;qdisc&lt;/span&gt; &lt;span class="n"&gt;mq&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt; &lt;span class="n"&gt;UP&lt;/span&gt; &lt;span class="n"&gt;mode&lt;/span&gt; &lt;span class="n"&gt;DORMANT&lt;/span&gt; &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="k"&gt;default&lt;/span&gt; &lt;span class="n"&gt;qlen&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt; &lt;span class="n"&gt;link&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;ether&lt;/span&gt; &lt;span class="n"&gt;ac&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;a1&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;52&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;09&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;b3&lt;/span&gt; &lt;span class="n"&gt;brd&lt;/span&gt; &lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;ff&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;像上面如果出现出现了&lt;code&gt;UP&lt;/code&gt;字样表示已经可用了。&lt;/p&gt;
+&lt;p&gt;用&lt;code&gt;wifi-menu&lt;/code&gt;进行网络连接：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;wifi&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;menu&lt;/span&gt; &lt;span class="n"&gt;wlp4s0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;设置分区&lt;/h3&gt;
+&lt;p&gt;虽然之前搞过一段时间的grub，不过UEFI出来后还没有详细地了解。等以后再写一篇详细的有关
+启动的东西吧。&lt;/p&gt;
+&lt;p&gt;我在这里使用的是cgdisk进行分区&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;cgdisk&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;分区结果如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;Device&lt;/span&gt;           &lt;span class="n"&gt;Start&lt;/span&gt;          &lt;span class="n"&gt;End&lt;/span&gt;   &lt;span class="n"&gt;Size&lt;/span&gt; &lt;span class="n"&gt;Type&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda1&lt;/span&gt;         &lt;span class="mi"&gt;2048&lt;/span&gt;      &lt;span class="mi"&gt;1050623&lt;/span&gt;   &lt;span class="mi"&gt;512&lt;/span&gt;&lt;span class="n"&gt;M&lt;/span&gt; &lt;span class="n"&gt;EFI&lt;/span&gt; &lt;span class="n"&gt;System&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda2&lt;/span&gt;      &lt;span class="mi"&gt;1050624&lt;/span&gt;    &lt;span class="mi"&gt;105908223&lt;/span&gt;    &lt;span class="mi"&gt;50&lt;/span&gt;&lt;span class="n"&gt;G&lt;/span&gt; &lt;span class="n"&gt;Linux&lt;/span&gt; &lt;span class="n"&gt;filesystem&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda3&lt;/span&gt;    &lt;span class="mi"&gt;105908224&lt;/span&gt;    &lt;span class="mi"&gt;972031999&lt;/span&gt;   &lt;span class="mi"&gt;413&lt;/span&gt;&lt;span class="n"&gt;G&lt;/span&gt; &lt;span class="n"&gt;Linux&lt;/span&gt; &lt;span class="n"&gt;filesystem&lt;/span&gt;
+&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda4&lt;/span&gt;    &lt;span class="mi"&gt;972032000&lt;/span&gt;    &lt;span class="mi"&gt;976773134&lt;/span&gt;   &lt;span class="mf"&gt;2.3&lt;/span&gt;&lt;span class="n"&gt;G&lt;/span&gt; &lt;span class="n"&gt;Linux&lt;/span&gt; &lt;span class="n"&gt;filesystem&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;创建文件系统：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;mkfs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fat&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;F32&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda1&lt;/span&gt;
+&lt;span class="n"&gt;mkfs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ext4&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda2&lt;/span&gt;
+&lt;span class="n"&gt;mkfs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ext4&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda3&lt;/span&gt;
+&lt;span class="n"&gt;mkswap&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda4&lt;/span&gt;
+&lt;span class="n"&gt;swapon&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda4&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;其中第一个分区是UEFI主板的需求，具体什么原因就不明白了。&lt;/p&gt;
+&lt;h3&gt;挂载分区&lt;/h3&gt;
+&lt;p&gt;查看当前分区的情况：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;lsblk&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;挂载根分区到/mnt：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;mount&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda2&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;挂载其他分区：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;mkdir&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;
+&lt;span class="n"&gt;mount&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda3&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;home&lt;/span&gt;
+
+&lt;span class="n"&gt;mkdir&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;boot&lt;/span&gt;
+&lt;span class="n"&gt;mount&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda1&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;boot&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;选择镜像&lt;/h3&gt;
+&lt;p&gt;最重要的一步，网速可是第一生产力啊！当我大中大也有了自己的源的时候，速度真是快到飞起
+了。同时教育网推荐清华的源，其他用163的也不错。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;vi&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;pacman&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mirrorlist&lt;/span&gt;
+
+&lt;span class="n"&gt;pacman&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Syy&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;安装基本系统&lt;/h3&gt;
+&lt;p&gt;基本系统是通过arch的&lt;code&gt;pacstrap&lt;/code&gt;脚本来进行的，也是一句话搞掂&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;pacstrap&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt; &lt;span class="n"&gt;base&lt;/span&gt; &lt;span class="n"&gt;base&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;devel&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;生成fstab&lt;/h3&gt;
+&lt;p&gt;/etc/fstab是用来定义分区以及块设备如何挂载到文件系统的。当你的磁盘分区挂载到了某个目
+录下的时候你才可以去访问磁盘里的内容。因此就需要去生成fstab的内容。以让系统启动是自动
+挂载相关的分区。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;genfstab&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;U&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;fstab&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;基本配置&lt;/h2&gt;
+&lt;p&gt;在完成了以上步骤后，一个基本的arch操作系统已经安装在你的硬盘上了。并且硬盘上划分的各
+个分区被挂载在U盘中arch系统的/mnt的目录下。所以要进行对新的系统的配置，就要先进入到新
+的系统中去。当然直接启动进入配置是可以的，也可以在当前的系统中利用chroot去对新的系统
+进行配置。&lt;/p&gt;
+&lt;h3&gt;Locale&lt;/h3&gt;
+&lt;p&gt;Locale是和地区相关的设置信息，如果不正确设置的话最直接的是字体会出现问题。当然还会有
+其他时间，货币等相关的信息会出错。我们在这里需要修改两个文件，都是在/etc下面。
+&lt;code&gt;locale.gen&lt;/code&gt;和&lt;code&gt;locale.conf&lt;/code&gt;。取消掉相关行的注释即可。然后运行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;locale&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;gen&lt;/span&gt;
+
+&lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;LANG&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;en_US&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;UTF&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;locale&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Time Zone&lt;/h3&gt;
+&lt;p&gt;时区信息只需要创建一个文件软连接即可&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;ln&lt;/span&gt; &lt;span class="na"&gt;-s&lt;/span&gt; &lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;usr&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;share&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;zoneinfo&lt;/span&gt;&lt;span class="o"&gt;/&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;Zone&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;/&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;SubZone&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;etc&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;localtime&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Hardware Clock&lt;/h3&gt;
+&lt;p&gt;硬件时钟模式。在双系统的时候系统时钟可能会出错。这里注意相应的bios里面的时钟要设置成
+utc的时间。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;hwclock&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;systohc&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;utc&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Hostname&lt;/h3&gt;
+&lt;p&gt;hostname是你的计算机的一个身份标识。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;echo&lt;/span&gt; &lt;span class="n"&gt;myhostname&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;etc&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hostname&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Configure the network&lt;/h3&gt;
+&lt;p&gt;前面安装的base与base-devel包里面会缺少一些网络管理的软件，所以在现在还有网络连接的时
+候要把连接网络相关的软件都安装好。使用系统自带的netctl现在已经可以完成网络连接的任务
+了。&lt;/p&gt;
+&lt;p&gt;我在这里使用wifi-menu来进行连接，所以需要安装依赖&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;pacman&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt; &lt;span class="n"&gt;dialog&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;arch的网络连接管理也是一个值得再讨论一下的地方吧。图形界面下还可以用NetworkMananger来
+管理，传统的鼠标操作。&lt;/p&gt;
+&lt;h3&gt;Set root password&lt;/h3&gt;
+&lt;p&gt;这一步必须进行，否则重启进入系统后无法登录了&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;passwd&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Install and configure a bootloader&lt;/h3&gt;
+&lt;p&gt;grub的工作原理之前简单了解过。基本就是每个阶段把相应的文件加载到内存中去。而因为新的
+GPT的出现，我这次安装也改用了gummiboot来引导。就只记录下安装的过程吧。这一步也是必须
+进行的。&lt;/p&gt;
+&lt;p&gt;安装&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;mount&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="n"&gt;efivarfs&lt;/span&gt; &lt;span class="n"&gt;efivarfs&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;firmware&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;efi&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;efivars&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;may&lt;/span&gt; &lt;span class="n"&gt;can&lt;/span&gt; &lt;span class="n"&gt;be&lt;/span&gt; &lt;span class="n"&gt;ignored&lt;/span&gt;
+&lt;span class="n"&gt;pacman&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;S&lt;/span&gt; &lt;span class="n"&gt;gummiboot&lt;/span&gt;
+&lt;span class="n"&gt;gummiboot&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;创建配置文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;vi&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;boot&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;loader&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;entries&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;arch&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;
+&lt;span class="o"&gt;---&lt;/span&gt;
+&lt;span class="n"&gt;title&lt;/span&gt; &lt;span class="n"&gt;Arch&lt;/span&gt; &lt;span class="n"&gt;Linux&lt;/span&gt;
+&lt;span class="n"&gt;linux&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;vmlinuz&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;
+&lt;span class="n"&gt;initrd&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;initramfs&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;linux&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;img&lt;/span&gt;
+&lt;span class="n"&gt;options&lt;/span&gt; &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=/&lt;/span&gt;&lt;span class="n"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;sda2&lt;/span&gt; &lt;span class="n"&gt;rw&lt;/span&gt; &lt;span class="n"&gt;quiet&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;exit, reboot and a new archlinux is coming&lt;/h3&gt;
+&lt;p&gt;从当前环境下退出：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;exit&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;卸载挂载分区：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;umount&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;R&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;mnt&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;R&lt;/span&gt; &lt;span class="n"&gt;means&lt;/span&gt; &lt;span class="n"&gt;recursive&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;重启：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;reboot&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;配置阶段&lt;/h1&gt;
+&lt;p&gt;前面只是最基本的配置。之后对于一般工作还有许多需要配置的软件及系统配置。&lt;/p&gt;
+&lt;p&gt;待续……&lt;/p&gt;</summary></entry><entry><title>python数据类型总结</title><link href="http://nanadair.github.io/pythonshu-ju-lei-xing-zong-jie.html" rel="alternate"></link><updated>2013-10-11T00:00:00+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2013-10-11:pythonshu-ju-lei-xing-zong-jie.html</id><summary type="html">&lt;!--Slug:--&gt;
+
+&lt;p&gt;从去年8月份开始学习python到现在，虽然没有写过什么高级的东西，但使用过程中，个人感觉
+python的灵活使用很大部分来自于其内置的数据类型。刚好这一段时间读了&lt;a href="http://book.douban.com/subject/3988517/"&gt;Learning
+Python&lt;/a&gt;, 书里面用了一个Part来介绍Python的数
+据类型，故总结在此。&lt;/p&gt;
+&lt;h2&gt;Python的内置数据类型&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Numbers&lt;/li&gt;
+&lt;li&gt;Strings&lt;/li&gt;
+&lt;li&gt;Lists&lt;/li&gt;
+&lt;li&gt;Dictionaries&lt;/li&gt;
+&lt;li&gt;Tuples&lt;/li&gt;
+&lt;li&gt;Files&lt;/li&gt;
+&lt;li&gt;Sets&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Numbers&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;immutable&lt;/strong&gt; &lt;/p&gt;
+&lt;p&gt;就注意下小数，分数都有内置的库支持。&lt;/p&gt;
+&lt;h3&gt;Sets&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;mutable&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Sets are collections of &lt;strong&gt;immutable&lt;/strong&gt; objects and support operations correspond to math
+set operations.&lt;/p&gt;
+&lt;p&gt;适用点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;去重&lt;/li&gt;
+&lt;li&gt;在遍历图时，记录已经过结点&lt;/li&gt;
+&lt;li&gt;几个有一定关系的数据集之间可能发生集合操作的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Strings&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;immutable&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;对string的各个操作都会返回一个新的string，之前的string是不会变的。&lt;/p&gt;
+&lt;h3&gt;Lists&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;mutable&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;list的各个方法调用，直接对原list进行操作，不要把结果再赋值回去。&lt;/p&gt;
+&lt;h3&gt;Dictionaries&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;mutable&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;要固定dictionary的输出顺序，对keys进行排序，然后输出。&lt;/p&gt;
+&lt;h3&gt;Tuples&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;immutalbe&lt;/strong&gt; lists&lt;/p&gt;
+&lt;p&gt;注意只对最顶层的内容是不可修改的。如果tuple内有元素是可变的（如一个元素是list类型），
+那么可以对list进行操作。&lt;/p&gt;
+&lt;h2&gt;Python的动态类型&lt;/h2&gt;
+&lt;p&gt;在python中，变量名是没有类型的，变量名只是指向了一个具体的对象。因此，类似一个空指针
+，可以任意修改指针指向其他的对象。因此变量看起来是动态类型的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;变量名为右值的赋值操作会使两个变量指向同一个对象。&lt;/li&gt;
+&lt;li&gt;更改指向不可变对象的变量的值，之前指向相同对象的变量的值不变。&lt;/li&gt;
+&lt;li&gt;更改指向可变对象的变量的值（非赋值操作），其他指向相同对象的变量的值跟随改变。&lt;/li&gt;
+&lt;li&gt;通过copy操作，可创建一个值相同的新的对象。&lt;/li&gt;
+&lt;li&gt;函数的参数传递：参数指向不可变对象，不会影响函数外的变量; 参数指向可变对象，对参数的
+  非赋值改变操作，影响函数外的指向相同的变量。&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="python"></category></entry><entry><title>博客搭建</title><link href="http://nanadair.github.io/bo-ke-da-jian.html" rel="alternate"></link><updated>2013-09-23T00:00:00+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2013-09-23:bo-ke-da-jian.html</id><summary type="html">&lt;!--Slug:--&gt;
+
+&lt;h2&gt;pelican 简介&lt;/h2&gt;
+&lt;p&gt;之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
+。后来突然发现这个用python写的博客生成工具，虽然感觉管理没有前两者那么方便，不过因为
+python自己比较熟悉，方便hack，所以就选择它来重新搭起来自己的博客。&lt;/p&gt;
+&lt;p&gt;当然，写博客的才是最关键的啦！&lt;/p&gt;
+&lt;h2&gt;搭建过程及创建文章&lt;/h2&gt;
+&lt;h3&gt;安装过程&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;pelican&lt;/span&gt;
+&lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;Markdown&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Configuration&lt;/h3&gt;
+&lt;p&gt;Just follow the promption.&lt;/p&gt;
+&lt;h3&gt;博客架构&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;blog&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;content&lt;/span&gt;              &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="err"&gt;存放输入的源文件&lt;/span&gt;
+&lt;span class="err"&gt;│&lt;/span&gt;   &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pages&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;          &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="err"&gt;存放手工创建的静态页面&lt;/span&gt;
+&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;output&lt;/span&gt;               &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="err"&gt;生成的输出文件&lt;/span&gt;
+&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;develop_server&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;    &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;devserver&lt;/span&gt;
+&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;Makefile&lt;/span&gt;             &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="err"&gt;方便管理博客的&lt;/span&gt;&lt;span class="n"&gt;Makefile&lt;/span&gt;
+&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;pelicanconf&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;       &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="err"&gt;主配置文件&lt;/span&gt;
+&lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;publishconf&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;       &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="err"&gt;主发布文件&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;放github&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;cd&lt;/span&gt; &lt;span class="n"&gt;output&lt;/span&gt;
+&lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;clone&lt;/span&gt; &lt;span class="n"&gt;git&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;github&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;io&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;git&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;文章的meta data:&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;Title&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="n"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="n"&gt;Category&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="n"&gt;Tags&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;span class="n"&gt;Slug&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;生成blog&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;publish&lt;/span&gt;
+&lt;span class="n"&gt;make&lt;/span&gt; &lt;span class="n"&gt;github&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;需要自行定义&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;遇到的问题及解决方法&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;pip源速度极慢，通常会timeout&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;解决方法：更换数据源。网上介绍的config文件里面定义index-url，但是使用了一直没有起作用
+。后来随便改改试试，改成index_url后发现config文件可以起到作用了。&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.leadnt.com/2013/08/使用国内镜像源来加速python-pypi包的安装/"&gt;pip源设置&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;安装pytz包出错&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;解决方法：是因为版本的问题。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt;&lt;span class="n"&gt;pre&lt;/span&gt; &lt;span class="n"&gt;pytz&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;markdown文件不识别&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;解决方法：因为pelican依赖一个特定的markdwon包，注意上面安装过程的命令&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将整个output文件作为git库，但是每次make publish后，output文件都会被覆盖&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;解决方法：在publishconf文件中有一个选项关于publish是否要覆盖output文件的，更改即可。&lt;/p&gt;
+&lt;h2&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="http://www.lizherui.com/pages/2013/08/17/build_blog.html"&gt;首先发现pelican的地方&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://docs.getpelican.com/en/3.2/"&gt;官网啦&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://akenzc.com/how-to-build-a-blog-with-pelican.html"&gt;另一个详细的搭建介绍&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.dongwm.com/archives/shi-yong-pelicanxin-de/"&gt;供参考的文章书写管理脚本&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</summary><category term="blog"></category><category term="pelican"></category></entry></feed>

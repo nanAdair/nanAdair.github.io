@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Eureka</title>
+        <meta charset="utf-8" />
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="http://nanadair.github.io/theme/static/css/style.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="http://nanadair.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Eureka Full Atom Feed" />
+    </head>
+
+    <body id="index" class="archive">
+        <div class="container">
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li class="active"><a href="http://nanadair.github.io">Home</a></li>
+                    <li><a href="http://nanadair.github.io/pages/about.html">about</a></li>
+                    <li><a href="http://nanadair.github.io/archives.html">Archives</a></li>
+                </ul>
+                <h3 class="text-muted"><a href="http://nanadair.github.io">Eureka</a></h3>
+				<h2 class="text-muted"></h2>
+             </div>
+<section id="content" class="content">
+
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="http://nanadair.github.io/lian-jie-qi-de-gong-zuo-liu-cheng.html" rel="bookmark" title="Permalink to 链接器的工作流程">链接器的工作流程</a></h2> </header>
+                <div class="entry-content"> <p>对链接器的研究工作源于目标代码混淆的项目。想要对二进制代码进行混淆，首先对可执行文件
+进行了评估。可执行文件的代码段的重定位已经被修复，缺少重定位信息，当在代码段里面插改
+指令的时候需要照顾到全部的重定位内容，因此混淆会有很大的限制，而且对于修改后的重定位
+的修复的正确性会是一个考验。所以混淆的对象就转向了二进制的目标代码，而想要在编译的过
+程去做一个等价变换的话，想来可行但是编译器的大黑盒实在是实力有限，我还是暂时不动这个
+方向了。于是就转向了较为简单点的，从链接过程去下手。好吧，上来就先跑题了。我是要介绍
+链接器的工作的，废话就先讲了一堆，进入正题。</p>
+<h2>程序的编译链接过程</h2>
+<p>拜IDE或者是gcc的功能所赐，在程序的诞生过程中最复杂的编译链接过程被隐藏在了一个按钮或
+者是一句简单的命令之下。虽然说有时并不需要去了解那么底层，使用默认配置就可以生成自己
+写的程序，但是想要理解程序到底是如何产生的，或者去调试一些库相关的错误的时候，就必须
+对程序的编译链接过程有所掌握。</p>
+<p>整个编译链接的过程包括了预处理，编译，汇编，链接四个过程。</p>
+<p><img alt="GCC编译链接过程" src="http://nanadair.github.io/images/generateExeProcess.png" /></p>
+<h3>预编译</h3>
+<p>预编译的过程就是处理源代码中以“#”开头的预编译指令。简单说就是将你在代码中为了方便编码
+的一些定义全部替换成原始的样子。对于调试宏定义相关的或者头文件包含的问题时，可以查看
+预编译后的文件。</p>
+<h3>编译</h3>
+<p>编译的过程包括了词法分析 ...</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="http://nanadair.github.io/archan-zhuang-pei-zhi.html" rel="bookmark" title="Permalink to Arch安装配置">Arch安装配置</a></h2> </header>
+                <div class="entry-content"> <p>使用archlinux大概也有一年多的时间了，之间安装系统这件事估计两只手已经数不过来了。不过
+倒不是因为arch会经常崩，反而只要每天升级前看一下arch官网挂出来的提示，一般都没有遇到
+大的升级后无法正常使用的情况。第一次安装配置的时候要花一两天的时间，而现在基本半个
+钟就可以完成安装和基本配置的工作了，不过每次安装都要参考官网的<a href="https://wiki.archlinux.org/index.php/Beginners'_guide">Beginners' guide</a>
+。所以，要好好把这个流程梳理出来，形成一篇自己的Beginners' guide吧。</p>
+<h1>准备阶段</h1>
+<p>每次安装采用的都是U盘安装，U盘安装比较方便易行，不受什么其他的限制吧。整个操作也是非
+常简单的。只需要简单的<code>dd</code>就可以了。</p>
+<div class="highlight"><pre><span class="n">dd</span> <span class="k">if</span><span class="o">=</span><span class="n">archlinux</span><span class="p">.</span><span class="n">iso</span> <span class="n">of</span><span class="o">=/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdX</span>
+</pre></div>
+
+
+<h1>安装阶段</h1>
+<p>和一般的操作系统安装的流程类似，arch的安装也是要分区，拷贝系统，进行配置的操作。不过
+这些操作中在其他的操作系统的安装过程中会通过和用户的交互来进行，而arch的安装则是要自
+己输入命令来完成了。</p>
+<h2>基本安装</h2>
+<p>用制作好的U盘系统盘启动，会进入到一个root登录的小的arch系统。我们就在这个系统下进行对
+自己的硬盘上的系统的安装。</p>
+<h3>配置网络</h3>
+<p>进入了小的arch系统后，这个系统是没有联网的 ...</p> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="http://nanadair.github.io/pythonshu-ju-lei-xing-zong-jie.html" rel="bookmark" title="Permalink to python数据类型总结">python数据类型总结</a></h2> </header>
+                <div class="entry-content"> <!--Slug:-->
+
+<p>从去年8月份开始学习python到现在，虽然没有写过什么高级的东西，但使用过程中，个人感觉
+python的灵活使用很大部分来自于其内置的数据类型。刚好这一段时间读了<a href="http://book.douban.com/subject/3988517/">Learning
+Python</a>, 书里面用了一个Part来介绍Python的数
+据类型，故总结在此。</p>
+<h2>Python的内置数据类型</h2>
+<ul>
+<li>Numbers</li>
+<li>Strings</li>
+<li>Lists</li>
+<li>Dictionaries</li>
+<li>Tuples</li>
+<li>Files</li>
+<li>Sets</li>
+</ul>
+<h3>Numbers</h3>
+<p><strong>immutable</strong> </p>
+<p>就注意下小数，分数都有内置的库支持。</p>
+<h3>Sets</h3>
+<p><strong>mutable</strong></p>
+<p>Sets are collections of <strong>immutable</strong> objects and support operations correspond to math
+set operations.</p>
+<p>适用点：</p>
+<ul>
+<li>去重</li>
+<li>在遍历图时，记录已经过结点</li>
+<li>几个有一定关系的数据集之间可能发生集合操作的</li>
+</ul>
+<h3>Strings</h3>
+<p><strong>immutable</strong></p>
+<p>对string的各个操作都会返回一个新的string，之前的string是不会变的。</p>
+<h3>Lists</h3>
+<p><strong>mutable ...</strong></p></!--slug:--> </div><!-- entry-content -->
+        </article>
+        <article class="hentry">
+                <header> <h2 class="entry-title"><a href="http://nanadair.github.io/bo-ke-da-jian.html" rel="bookmark" title="Permalink to 博客搭建">博客搭建</a></h2> </header>
+                <div class="entry-content"> <!--Slug:-->
+
+<h2>pelican 简介</h2>
+<p>之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
+。后来突然发现这个用python写的博客生成工具，虽然感觉管理没有前两者那么方便，不过因为
+python自己比较熟悉，方便hack，所以就选择它来重新搭起来自己的博客。</p>
+<p>当然，写博客的才是最关键的啦！</p>
+<h2>搭建过程及创建文章</h2>
+<h3>安装过程</h3>
+<div class="highlight"><pre><span class="n">pip</span> <span class="n">install</span> <span class="n">pelican</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">Markdown</span>
+</pre></div>
+
+
+<h3>Configuration</h3>
+<p>Just follow the promption.</p>
+<h3>博客架构</h3>
+<div class="highlight"><pre><span class="n">blog</span><span class="o">/</span>
+<span class="err">├──</span> <span class="n">content</span>              <span class="err">#</span> <span class="err">存放输入的源文件</span>
+<span class="err">│</span>   <span class="err">└──</span> <span class="p">(</span><span class="n">pages</span><span class="p">)</span>          <span class="err">#</span> <span class="err">存放手工创建的静态页面</span>
+<span class="err">├──</span> <span class="n">output</span>               <span class="err">#</span> <span class="err">生成的输出文件</span>
+<span class="err">├──</span> <span class="n">develop_server</span><span class="p">.</span><span class="n">sh</span>    <span class="err">#</span> <span class="n">make</span> <span class="n">devserver</span>
+<span class="err">├──</span> <span class="n">Makefile</span>             <span class="err">#</span> <span class="err">方便管理博客的</span><span class="n">Makefile</span>
+<span class="err">├──</span> <span class="n">pelicanconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主配置文件</span>
+<span class="err">└──</span> <span class="n">publishconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主发布文件</span>
+</pre></div>
+
+
+<h3>放github</h3>
+<div class="highlight"><pre><span class="n">cd ...</span></pre></div></!--slug:--> </div><!-- entry-content -->
+        </article>
+<div class="pager">
+      <ul>
+                        <li class="previous disabled"><a>← Previous</a></li>
+                        <li class="next disabled"><a>Next →</a></li>
+      </ul>
+    </div>
+</section><!-- content -->
+            <footer id="contentinfo" class="footer">
+                    <nav class="pull-right bottom-nav">
+                        <a href="http://nanadair.github.io/feeds/all.atom.xml">RSS</a>
+                    </nav>
+                    <address id="about" class="vcard body">
+                    &copy; <a href="http://nanadair.github.io">Eureka</a> Proudly powered by <a href="http://getpelican.com/">Pelican</a>
+                    </address><!-- /#about -->
+            </footer><!-- /#contentinfo -->
+        </div><!-- container -->
+    </body>
+</html>
