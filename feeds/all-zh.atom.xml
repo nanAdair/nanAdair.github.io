@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all-zh.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-04T16:38:37+08:00</updated><entry><title>链接器的工作流程</title><link href="http://nanadair.github.io/lian-jie-qi-de-gong-zuo-liu-cheng.html" rel="alternate"></link><updated>2014-05-04T16:38:37+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2014-05-04:lian-jie-qi-de-gong-zuo-liu-cheng.html</id><summary type="html">&lt;p&gt;对链接器的研究工作源于目标代码混淆的项目。想要对二进制代码进行混淆，首先对可执行文件
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all-zh.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-04T18:18:41+08:00</updated><entry><title>链接器的工作流程</title><link href="http://nanadair.github.io/lian-jie-qi-de-gong-zuo-liu-cheng.html" rel="alternate"></link><updated>2014-05-04T18:18:41+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-04:lian-jie-qi-de-gong-zuo-liu-cheng.html</id><summary type="html">&lt;p&gt;对链接器的研究工作源于目标代码混淆的项目。想要对二进制代码进行混淆，首先对可执行文件
 进行了评估。可执行文件的代码段的重定位已经被修复，缺少重定位信息，当在代码段里面插改
 指令的时候需要照顾到全部的重定位内容，因此混淆会有很大的限制，而且对于修改后的重定位
 的修复的正确性会是一个考验。所以混淆的对象就转向了二进制的目标代码，而想要在编译的过
@@ -286,7 +286,7 @@
 &lt;li&gt;&lt;a href="http://www.airs.com/blog/archives/38"&gt;One programmer who writes the golden-linker&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="http://refspecs.linuxfoundation.org/LSB_3.2.0/LSB-Core-generic/LSB-Core-generic/symversion.html"&gt;Object files's detail
 content&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="linker"></category><category term="binary"></category><category term="linux"></category></entry><entry><title>Arch安装配置</title><link href="http://nanadair.github.io/archan-zhuang-pei-zhi.html" rel="alternate"></link><updated>2014-04-20T17:34:35+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2014-04-20:archan-zhuang-pei-zhi.html</id><summary type="html">&lt;p&gt;使用archlinux大概也有一年多的时间了，之间安装系统这件事估计两只手已经数不过来了。不过
+&lt;/ul&gt;</summary><category term="linker"></category><category term="binary"></category><category term="linux"></category></entry><entry><title>Arch安装配置</title><link href="http://nanadair.github.io/archan-zhuang-pei-zhi.html" rel="alternate"></link><updated>2014-04-20T17:34:35+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-04-20:archan-zhuang-pei-zhi.html</id><summary type="html">&lt;p&gt;使用archlinux大概也有一年多的时间了，之间安装系统这件事估计两只手已经数不过来了。不过
 倒不是因为arch会经常崩，反而只要每天升级前看一下arch官网挂出来的提示，一般都没有遇到
 大的升级后无法正常使用的情况。第一次安装配置的时候要花一两天的时间，而现在基本半个
 钟就可以完成安装和基本配置的工作了，不过每次安装都要参考官网的&lt;a href="https://wiki.archlinux.org/index.php/Beginners'_guide"&gt;Beginners' guide&lt;/a&gt;
@@ -498,7 +498,7 @@ GPT的出现，我这次安装也改用了gummiboot来引导。就只记录下�
 
 &lt;h1&gt;配置阶段&lt;/h1&gt;
 &lt;p&gt;前面只是最基本的配置。之后对于一般工作还有许多需要配置的软件及系统配置。&lt;/p&gt;
-&lt;p&gt;待续……&lt;/p&gt;</summary></entry><entry><title>python数据类型总结</title><link href="http://nanadair.github.io/pythonshu-ju-lei-xing-zong-jie.html" rel="alternate"></link><updated>2013-10-11T00:00:00+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2013-10-11:pythonshu-ju-lei-xing-zong-jie.html</id><summary type="html">&lt;!--Slug:--&gt;
+&lt;p&gt;待续……&lt;/p&gt;</summary></entry><entry><title>python数据类型总结</title><link href="http://nanadair.github.io/pythonshu-ju-lei-xing-zong-jie.html" rel="alternate"></link><updated>2013-10-11T00:00:00+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2013-10-11:pythonshu-ju-lei-xing-zong-jie.html</id><summary type="html">&lt;!--Slug:--&gt;
 
 &lt;p&gt;从去年8月份开始学习python到现在，虽然没有写过什么高级的东西，但使用过程中，个人感觉
 python的灵活使用很大部分来自于其内置的数据类型。刚好这一段时间读了&lt;a href="http://book.douban.com/subject/3988517/"&gt;Learning
@@ -550,7 +550,7 @@ set operations.&lt;/p&gt;
 &lt;li&gt;通过copy操作，可创建一个值相同的新的对象。&lt;/li&gt;
 &lt;li&gt;函数的参数传递：参数指向不可变对象，不会影响函数外的变量; 参数指向可变对象，对参数的
   非赋值改变操作，影响函数外的指向相同的变量。&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="python"></category></entry><entry><title>博客搭建</title><link href="http://nanadair.github.io/bo-ke-da-jian.html" rel="alternate"></link><updated>2013-09-23T00:00:00+08:00</updated><author><name>Nan Adair</name></author><id>tag:nanadair.github.io,2013-09-23:bo-ke-da-jian.html</id><summary type="html">&lt;!--Slug:--&gt;
+&lt;/ul&gt;</summary><category term="python"></category></entry><entry><title>博客搭建</title><link href="http://nanadair.github.io/bo-ke-da-jian.html" rel="alternate"></link><updated>2013-09-23T00:00:00+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2013-09-23:bo-ke-da-jian.html</id><summary type="html">&lt;!--Slug:--&gt;
 
 &lt;h2&gt;pelican 简介&lt;/h2&gt;
 &lt;p&gt;之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
