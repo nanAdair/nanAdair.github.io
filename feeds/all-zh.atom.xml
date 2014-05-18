@@ -1,5 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all-zh.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-04T18:18:41+08:00</updated><entry><title>链接器的工作流程</title><link href="http://nanadair.github.io/lian-jie-qi-de-gong-zuo-liu-cheng.html" rel="alternate"></link><updated>2014-05-04T18:18:41+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-04:lian-jie-qi-de-gong-zuo-liu-cheng.html</id><summary type="html">&lt;p&gt;对链接器的研究工作源于目标代码混淆的项目。想要对二进制代码进行混淆，首先对可执行文件
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all-zh.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-18T19:23:18+08:00</updated><entry><title>Machine Learning Peep</title><link href="http://nanadair.github.io/machine-learning-peep.html" rel="alternate"></link><updated>2014-05-18T19:23:18+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-18:machine-learning-peep.html</id><summary type="html">&lt;p&gt;Ever since few years ago, big data has stepped into our daily life as a new concept
+abruptly. Everybody, especially those starting a startup, began to talk about how to use big 
+data to improve nearly everything we have access to. Whenever you open a web page,
+you appraise a book, you have a meal... what you do can be recorded and then
+contribute to a machine learning or data mining process. It is just like a big black
+machine, which is collecting records from every corner of the world consecutively and
+is running day and night processing them. When you resort to it for some answer, it
+will say "Hey, based on what you and others who like you have done, this is the result or
+a result list for you.". This can be the perspective of machine learning from
+a client. &lt;/p&gt;
+&lt;p&gt;Machine Learning is such a hot topic that when there is &lt;a href="https://class.coursera.org/ml-005"&gt;a great rudimental
+class&lt;/a&gt;, you
+will have to take it inevitablely.(I have came to this class in coursera many times,
+and after procrastinating for two years, I joined this class this year, so you can
+see it is &lt;strong&gt;inevitablely&lt;/strong&gt;). And this can definitely do great good for you. So,
+I think after learning this class for two months, I can peep some basis of machine
+learning and make a naive comprehension here.&lt;/p&gt;
+&lt;h2&gt;What is Machine Learning&lt;/h2&gt;
+&lt;p&gt;&lt;a href="http://en.wikipedia.org/wiki/Machine_learning"&gt;Machine Learning&lt;/a&gt; is a branch of
+artificial intelligence. What machine learning does is to draw a conclusion from a set
+of data by making a model from the data. There is a formal definition by &lt;a href="http://en.wikipedia.org/wiki/Tom_M._Mitchell"&gt;Tom
+M. Mitchell&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A computer program is said to learn from experience E with respect to some class of tasks T 
+and performance measure P, if its performance at tasks in T, as measured by P, 
+improves with experience E&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;We can explain this by an example of email. Say we have a lot of emails of spam or
+non-spam labeled, what we want to do is to justify whether a email is a spam email or not. 
+Parallel with the concept above, we have&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;T: The task is telling if a email is a spam. &lt;/li&gt;
+&lt;li&gt;E: The process is learning the history data.&lt;/li&gt;
+&lt;li&gt;P: Tha performance measure is the accuracy of telling a new email is a spam.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So unlike the traditional thoughts about seeking for the reasons of what happended,
+what machine learning does is to explore the correlation among the data, and then to
+sent the fresh data to the most related data set.&lt;/p&gt;
+&lt;h2&gt;How to peform a Machine Learning process ##&lt;/h2&gt;
+&lt;p&gt;Machine Learning is a very complicated process, though I don't have experience of large
+data processing, I make a lot fun doing execises of the ml class and hope what the
+conclusion I drawed from those learning courses can be generalized. &lt;/p&gt;
+&lt;p&gt;The steps of machine learning is:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Collect&lt;/span&gt; &lt;span class="nx"&gt;raw&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt; 
+&lt;span class="nx"&gt;Repeat&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; 
+    &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Decide&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;features&lt;/span&gt; &lt;span class="nx"&gt;of&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt; 
+    &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Make&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="nx"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;ie&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;define&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;hypothesis&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;
+    &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Define&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;cost&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;straightfoward&lt;/span&gt; &lt;span class="nx"&gt;based&lt;/span&gt; &lt;span class="nx"&gt;on&lt;/span&gt; &lt;span class="nx"&gt;step&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Determine&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;learning&lt;/span&gt; &lt;span class="nx"&gt;algorithm&lt;/span&gt; 
+    &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Learn&lt;/span&gt; &lt;span class="nx"&gt;until&lt;/span&gt; &lt;span class="nx"&gt;cost&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;value&lt;/span&gt; &lt;span class="nx"&gt;is&lt;/span&gt; &lt;span class="nx"&gt;almost&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;smallest&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;maybe&lt;/span&gt; &lt;span class="nx"&gt;visualize&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt;
+       &lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="nx"&gt;to&lt;/span&gt; &lt;span class="nx"&gt;help&lt;/span&gt; &lt;span class="nx"&gt;make&lt;/span&gt; &lt;span class="nx"&gt;adjustment&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt; &lt;span class="nx"&gt;Get&lt;/span&gt; &lt;span class="nx"&gt;the&lt;/span&gt; &lt;span class="nx"&gt;result&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;If you want to do machine learning well, the most important thing is to have a large
+amount of data. This is the basis of your learning process. Without an adequate data
+set, nothing can be realized even you have a claimed strong algorithm. &lt;/p&gt;
+&lt;p&gt;After you get the basic data set, you can make your hands dirty. Maybe select some
+features which can be easily inspected manually first, and formalize the data set based on the
+features you difine. From now on, the data set you have is just like the whole points
+in a n-dimension space, and what your task is to find a perfect model or function to
+put all the points on the model or near the model. From the mathematical point, the
+task is to train the data to choose the parameters of your model. What the learning
+process does is just modifying the parameters to make the cost function value
+smaller, and after a number of cycles, you can have a decent model. Therefore, the
+machine learning algorithm is about helping us modify the parameters.&lt;/p&gt;
+&lt;p&gt;What the machine learning focuses on are accuracy and effiency(my unserstanding, may not
+be complete). Effiency can be tested by how many time the learning algorithm takes.
+And accuracy is checked by F score.&lt;/p&gt;
+&lt;p&gt;The F score is caculated by error matrics:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt; &lt;span class="n"&gt;Precision&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Recall&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Accuracy&lt;/span&gt;
+      &lt;span class="nl"&gt;predicted:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;actual&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;True&lt;/span&gt; &lt;span class="n"&gt;positive&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+      &lt;span class="nl"&gt;predicted:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;actual&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;True&lt;/span&gt; &lt;span class="n"&gt;negtive&lt;/span&gt;  &lt;span class="mi"&gt;2&lt;/span&gt;
+      &lt;span class="nl"&gt;predicted:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;actual&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;False&lt;/span&gt; &lt;span class="n"&gt;negtive&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;
+      &lt;span class="nl"&gt;predicted:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;actual&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="n"&gt;False&lt;/span&gt; &lt;span class="n"&gt;positive&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;
+
+ &lt;span class="nl"&gt;Precision:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="nl"&gt;Recall:&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="nl"&gt;Accuracy:&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;whole&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="n"&gt;set&lt;/span&gt;
+
+ &lt;span class="n"&gt;F&lt;/span&gt; &lt;span class="n"&gt;score&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+ &lt;span class="n"&gt;F&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;P&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;P&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;R&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Learning Algorithm Learned&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Linear_regression"&gt;linear regression&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Logistic_regression"&gt;logistic regression&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Artificial_neural_network"&gt;neural network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Support_vector_machine"&gt;svm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/K-means_clustering"&gt;k-means&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Collaborative_filtering"&gt;collaborative filtering&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Methods to make learning better&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Feature_scaling"&gt;feature scaling&lt;/a&gt;: standardize the
+  data range&lt;/li&gt;
+&lt;li&gt;mean normalization: make the mean value 0&lt;/li&gt;
+&lt;li&gt;learning rate: be adjusted while learning to make the learning converged quickly&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Regularization_(mathematics)"&gt;regularization&lt;/a&gt;: keep
+  the result from overfitting&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Principal_component_analysis"&gt;principal component
+  analysis&lt;/a&gt;: decrease data
+  occupancy, accelerate learing process, visualize data at the cost of information
+  lost&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://en.wikipedia.org/wiki/Anomaly_detection"&gt;anomaly detection&lt;/a&gt;: eliminate the
+  outliers.&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="ml"></category><category term="algorithm"></category></entry><entry><title>链接器的工作流程</title><link href="http://nanadair.github.io/lian-jie-qi-de-gong-zuo-liu-cheng.html" rel="alternate"></link><updated>2014-05-04T18:18:41+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-04:lian-jie-qi-de-gong-zuo-liu-cheng.html</id><summary type="html">&lt;p&gt;对链接器的研究工作源于目标代码混淆的项目。想要对二进制代码进行混淆，首先对可执行文件
 进行了评估。可执行文件的代码段的重定位已经被修复，缺少重定位信息，当在代码段里面插改
 指令的时候需要照顾到全部的重定位内容，因此混淆会有很大的限制，而且对于修改后的重定位
 的修复的正确性会是一个考验。所以混淆的对象就转向了二进制的目标代码，而想要在编译的过
