@@ -1,5 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-18T19:23:18+08:00</updated><entry><title>Machine Learning Peep</title><link href="http://nanadair.github.io/machine-learning-peep.html" rel="alternate"></link><updated>2014-05-18T19:23:18+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-18:machine-learning-peep.html</id><summary type="html">&lt;p&gt;Ever since few years ago, big data has stepped into our daily life as a new concept
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Eureka</title><link href="http://nanadair.github.io/" rel="alternate"></link><link href="http://nanadair.github.io/feeds/all.atom.xml" rel="self"></link><id>http://nanadair.github.io/</id><updated>2014-05-25T17:31:06+08:00</updated><entry><title>C++变量的声明与定义/初始化</title><link href="http://nanadair.github.io/cbian-liang-de-sheng-ming-yu-ding-yi-chu-shi-hua.html" rel="alternate"></link><updated>2014-05-25T17:31:06+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-25:cbian-liang-de-sheng-ming-yu-ding-yi-chu-shi-hua.html</id><summary type="html">&lt;p&gt;学习语言的时候变量一定是最先接触的。变量的声明与定义说起来算是最基本的东西了。这个看
+起来十分简单的东西在结合了const, static, class以及多个文件的时候就变成了一堆mess。特
+别是何时初始化，针对不同的情况有不同的处理方法。今天就针对变量是否是const, 是否是
+static,是否定义在class内部的8种情况，来总结下每种情况的声明与初始化的方法和意义。全文
+均只考虑全局变量，以及类中定义的数据成员。函数中定义的局部变量作用域不会跨文件，较为
+简单，不在考虑范围内。&lt;/p&gt;
+&lt;h2&gt;情况1：const ~static ~class 变量&lt;/h2&gt;
+&lt;p&gt;这种情况下定义的一个const变量可以是在多个文件间共享的也可以是只能在一个文件中使用的
+全局变量。那么，会有三种可以通过编译的声明及初始化的方式。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;// foo.h&lt;/span&gt;
+&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="c1"&gt;// foo.cc&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="k"&gt;include&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;foo.h&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="c1"&gt;// bar.h&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="c1"&gt;// bar.cc&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="k"&gt;include&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;foo.h&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;const变量的定义式出现在.h文件中。此时每个包含这个.h文件的目标代码的.rodata段都会有一
+个const变量a的定义。此时每个目标代码中的变量a是相互独立的。而最终生成的可执行文件中，
+在.rodata段会有多个变量a的数据。从const的语义来考虑，不会带来运行上的错误。不过会造成
+空间的浪费。&lt;/p&gt;
+&lt;p&gt;正确做法：如果这个const不是被其他文件共享的，那么应该把它定义在.cc文件中。&lt;/p&gt;
+&lt;p&gt;正确做法：当一个const变量需要被多个文件使用时，采取下面的实践方法：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;// foo.h&lt;/span&gt;
+&lt;span class="k"&gt;extern&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="c1"&gt;// foo.cc&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="k"&gt;include&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;foo.h&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;2&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="c1"&gt;// bar.h&lt;/span&gt;
+&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;span class="c1"&gt;// bar.cc&lt;/span&gt;
+&lt;span class="p"&gt;#&lt;/span&gt;&lt;span class="k"&gt;include&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;foo.h&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;只要在一个.h文件用extern声明const变量，然后在一个.cc文件中定义这个变量即可。其他用到
+这个const变量的文件只需要include这个.h文件即可。最后的可执行文件中只有一份变量a存在。&lt;/p&gt;
+&lt;h2&gt;情况2：const static ~class 变量&lt;/h2&gt;
+&lt;p&gt;类似情况1，如果变量的定义式出现在.h文件中，是会有多份存在与包含这个.h文件的目标代码中
+的。这种定义其实与static的逻辑不符，下面会进行讨论。&lt;/p&gt;
+&lt;p&gt;而如果像情况1的实践方法在.h文件中用extern声明，在.cc文件中定义这个变量。不会通过编译
+。很明显的extern与static是矛盾的。&lt;/p&gt;
+&lt;p&gt;当然把这个变量定义在.cc文件中，只让这个变量存在与该文件的作用域中。其实和情况1一样。
+因为const的限制，这时候有没有static的声明都是一样的了。&lt;/p&gt;
+&lt;p&gt;这种情况的讨论算是为了完整覆盖所有情况吧。实际考虑下，这种情况其实没有存在的意义的。
+对于static的全局变量，static的目的就是把这个变量的作用域限制在定义这个变量的文件里面
+。而当变量限制在一个文件中时，const的存在让static无法起到它的作用了。&lt;/p&gt;
+&lt;h2&gt;情况3：const ~static class 变量：&lt;/h2&gt;
+&lt;p&gt;正确的定义/初始化方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;利用构造函数的初始化成员列表初始化，此时每个对象都有一份该变量。每个对象的该变量值
+  可以不同，但是对该对象不再改变。&lt;/li&gt;
+&lt;li&gt;利用C++11 in-class initialization初始化。相当于变量的一个default value。每个对象在
+  初始化时仍然可以通过构造函数的初始化成员列表类改变它。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;错误的定义/初始化方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在.h文件的class定义外初始化。&lt;/li&gt;
+&lt;li&gt;在.h文件对应的.cc文件中去初始化。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;情况4：const static class 变量：&lt;/h2&gt;
+&lt;p&gt;正确的定义/初始化方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在.h文件的class定义中：static const type name [=value];&lt;/li&gt;
+&lt;li&gt;在.h文件对应的.cc文件中，此时必须是class定义时没有提供value：const type name
+  [=value]; 与上互补，[=value]必须在其中之一出现。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;错误的定义/初始化方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在构造函数的初始化成员列表中初始化。&lt;/li&gt;
+&lt;li&gt;在.h文件中class定义外初始化。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;情况4与情况3的区别在于，static的作用让该变量成为所有该类的对象共享的一个变量。&lt;/p&gt;
+&lt;h2&gt;情况5：~const static ~class 变量：&lt;/h2&gt;
+&lt;p&gt;静态全局变量，它的存在的意义就在于在一个文件的作用域下的全局共享变量。因此，如果在.h
+文件中定义是与变量的定义初衷相违背的。但是如果出现了这样的定义错误，编译器是无法识别
+出来的。&lt;/p&gt;
+&lt;p&gt;如果在.h文件中定义，那么每个包含这个.h文件的目标代码的.data段都有一个这个变量的定义。
+不会出现重定义的编译错误。但是相同名字的该变量在每个文件中都是相互独立的。也就是说在
+一个文件中修改的该变量的值，不会对其他文件中对引用变量的地方产生任何作用。这会是一个
+逻辑错误。&lt;/p&gt;
+&lt;p&gt;所以针对这种情况，正确的做法是，只在一个.cc文件中定义。&lt;/p&gt;
+&lt;h2&gt;情况6：~const static class 变量：&lt;/h2&gt;
+&lt;p&gt;正确的定义/初始化方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在类中声明，在.cc中定义。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;错误的定义/初始化方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在.h文件的class的定义外定义：如果多个文件包含这个.h文件时，会出现重定义。&lt;/li&gt;
+&lt;li&gt;在class中定义：in-class initialization只对const成员变量可用。&lt;/li&gt;
+&lt;li&gt;在构造函数的初始化成员列表中。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;情况6与情况4的区别就在于类成员是否是const。该类的所有对象共享一份该变量。每个对象对这
+个static变量的修改都会作用到其他对象上。&lt;/p&gt;
+&lt;h2&gt;情况7：~const ~static ~class 变量：&lt;/h2&gt;
+&lt;p&gt;普通的全局变量: 如果是单个文件作用域就定义在.cc文件中。如果是多个文件共享，那么在.h文
+件中extern声明，然后在某个.cc文件中定义该变量。其他文件只需要include该.h文件即可。&lt;/p&gt;
+&lt;h2&gt;情况8：~const ~static class 变量：&lt;/h2&gt;
+&lt;p&gt;类的普通成员变量：用构造函数的初始化成员列表初始化。&lt;/p&gt;
+&lt;h2&gt;Plus: 函数中的静态变量：&lt;/h2&gt;
+&lt;p&gt;上面的情况已经包含了所有的全局变量，以及类成员变量的情况。最后分析一下函数中的特殊变
+量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于函数中的const变量：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个其实和普通函数中的局部变量一样，只是平添了const不可修改的属性而已。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于函数中的static变量：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;函数中的静态变量的定义方式和一般局部变量一样。只是编译器可以识别出来这句话，从而不会出现
+每次调用该函数都会执行一次这句话的情况。具体地说，就是在编译时期，编译器已经可以识别
+出来这个函数中的静态变量，然后把这个变量定义在了.data段中，而不像一般的函数中的局部变
+量定义在stack上。这样，在每次函数退出后，.data段中该变量仍然存在，并且保留修改后的值
+。而与一般.data段定义的全局变量相比，这个变量的可见范围只是在定义这个变量的函数中。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于函数中的const static变量：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;与上相比，定义的位置从.data变成了.rodata。具有了不可更改属性。其他的像作用域还有生命
+期都不变。&lt;/p&gt;
+&lt;p&gt;希望可以把所有关于变量的声明，定义/初始化的情况都涵盖了。以后就不用再去纠结应该在哪里
+声明啊，重定义啊，未初始化啊等等的问题了。&lt;/p&gt;</summary><category term="C++"></category></entry><entry><title>Machine Learning Peep</title><link href="http://nanadair.github.io/machine-learning-peep.html" rel="alternate"></link><updated>2014-05-18T19:38:16+08:00</updated><author><name>wbn</name></author><id>tag:nanadair.github.io,2014-05-18:machine-learning-peep.html</id><summary type="html">&lt;p&gt;Ever since few years ago, big data has stepped into our daily life as a new concept
 abruptly. Everybody, especially those starting a startup, began to talk about how to use big 
 data to improve nearly everything we have access to. Whenever you open a web page,
 you appraise a book, you have a meal... what you do can be recorded and then

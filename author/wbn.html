@@ -57,8 +57,8 @@
 
     <div class='article'>
         <div class="content-title">
-            <a href="../machine-learning-peep.html"><h1>Machine Learning Peep</h1></a>
-Sun 18 May 2014
+            <a href="../cbian-liang-de-sheng-ming-yu-ding-yi-chu-shi-hua.html"><h1>C++变量的声明与定义/初始化</h1></a>
+Sun 25 May 2014
 
 by <a class="url fn" href="../author/wbn.html">wbn</a>
  
@@ -67,120 +67,158 @@ by <a class="url fn" href="../author/wbn.html">wbn</a>
  
         </div>
         
-        <div><p>Ever since few years ago, big data has stepped into our daily life as a new concept
-abruptly. Everybody, especially those starting a startup, began to talk about how to use big 
-data to improve nearly everything we have access to. Whenever you open a web page,
-you appraise a book, you have a meal... what you do can be recorded and then
-contribute to a machine learning or data mining process. It is just like a big black
-machine, which is collecting records from every corner of the world consecutively and
-is running day and night processing them. When you resort to it for some answer, it
-will say "Hey, based on what you and others who like you have done, this is the result or
-a result list for you.". This can be the perspective of machine learning from
-a client. </p>
-<p>Machine Learning is such a hot topic that when there is <a href="https://class.coursera.org/ml-005">a great rudimental
-class</a>, you
-will have to take it inevitablely.(I have came to this class in coursera many times,
-and after procrastinating for two years, I joined this class this year, so you can
-see it is <strong>inevitablely</strong>). And this can definitely do great good for you. So,
-I think after learning this class for two months, I can peep some basis of machine
-learning and make a naive comprehension here.</p>
-<h2>What is Machine Learning</h2>
-<p><a href="http://en.wikipedia.org/wiki/Machine_learning">Machine Learning</a> is a branch of
-artificial intelligence. What machine learning does is to draw a conclusion from a set
-of data by making a model from the data. There is a formal definition by <a href="http://en.wikipedia.org/wiki/Tom_M._Mitchell">Tom
-M. Mitchell</a>:</p>
-<blockquote>
-<p>A computer program is said to learn from experience E with respect to some class of tasks T 
-and performance measure P, if its performance at tasks in T, as measured by P, 
-improves with experience E</p>
-</blockquote>
-<p>We can explain this by an example of email. Say we have a lot of emails of spam or
-non-spam labeled, what we want to do is to justify whether a email is a spam email or not. 
-Parallel with the concept above, we have</p>
-<ul>
-<li>T: The task is telling if a email is a spam. </li>
-<li>E: The process is learning the history data.</li>
-<li>P: Tha performance measure is the accuracy of telling a new email is a spam.</li>
-</ul>
-<p>So unlike the traditional thoughts about seeking for the reasons of what happended,
-what machine learning does is to explore the correlation among the data, and then to
-sent the fresh data to the most related data set.</p>
-<h2>How to peform a Machine Learning process ##</h2>
-<p>Machine Learning is a very complicated process, though I don't have experience of large
-data processing, I make a lot fun doing execises of the ml class and hope what the
-conclusion I drawed from those learning courses can be generalized. </p>
-<p>The steps of machine learning is:</p>
-<div class="highlight"><pre><span class="mi">0</span><span class="p">.</span> <span class="nx">Collect</span> <span class="nx">raw</span> <span class="nx">data</span> 
-<span class="nx">Repeat</span><span class="o">:</span> 
-    <span class="mi">1</span><span class="p">.</span> <span class="nx">Decide</span> <span class="nx">the</span> <span class="nx">features</span> <span class="nx">of</span> <span class="nx">data</span> 
-    <span class="mi">2</span><span class="p">.</span> <span class="nx">Make</span> <span class="nx">a</span> <span class="nx">data</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">ie</span><span class="p">.</span> <span class="nx">define</span> <span class="nx">the</span> <span class="nx">hypothesis</span> <span class="kd">function</span>
-    <span class="mi">3</span><span class="p">.</span> <span class="nx">Define</span> <span class="nx">the</span> <span class="nx">cost</span> <span class="kd">function</span><span class="p">(</span><span class="nx">straightfoward</span> <span class="nx">based</span> <span class="nx">on</span> <span class="nx">step</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="mi">4</span><span class="p">.</span> <span class="nx">Determine</span> <span class="nx">the</span> <span class="nx">learning</span> <span class="nx">algorithm</span> 
-    <span class="mi">5</span><span class="p">.</span> <span class="nx">Learn</span> <span class="nx">until</span> <span class="nx">cost</span> <span class="kd">function</span> <span class="nx">value</span> <span class="nx">is</span> <span class="nx">almost</span> <span class="nx">the</span> <span class="nx">smallest</span><span class="p">(</span><span class="nx">maybe</span> <span class="nx">visualize</span> <span class="nx">the</span>
-       <span class="nx">data</span> <span class="nx">to</span> <span class="nx">help</span> <span class="nx">make</span> <span class="nx">adjustment</span><span class="p">)</span>
-<span class="mi">6</span><span class="p">.</span> <span class="nx">Get</span> <span class="nx">the</span> <span class="nx">result</span>
+        <div><p>学习语言的时候变量一定是最先接触的。变量的声明与定义说起来算是最基本的东西了。这个看
+起来十分简单的东西在结合了const, static, class以及多个文件的时候就变成了一堆mess。特
+别是何时初始化，针对不同的情况有不同的处理方法。今天就针对变量是否是const, 是否是
+static,是否定义在class内部的8种情况，来总结下每种情况的声明与初始化的方法和意义。全文
+均只考虑全局变量，以及类中定义的数据成员。函数中定义的局部变量作用域不会跨文件，较为
+简单，不在考虑范围内。</p>
+<h2>情况1：const ~static ~class 变量</h2>
+<p>这种情况下定义的一个const变量可以是在多个文件间共享的也可以是只能在一个文件中使用的
+全局变量。那么，会有三种可以通过编译的声明及初始化的方式。</p>
+<div class="highlight"><pre><span class="c1">// foo.h</span>
+<span class="k">const</span> <span class="k">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mh">2</span><span class="p">;</span>
+<span class="c1">// foo.cc</span>
+<span class="p">#</span><span class="k">include</span> <span class="s">&quot;foo.h&quot;</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">a</span><span class="p">;</span>
+<span class="c1">// bar.h</span>
+<span class="p">...</span>
+<span class="c1">// bar.cc</span>
+<span class="p">#</span><span class="k">include</span> <span class="s">&quot;foo.h&quot;</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">a</span><span class="p">;</span>
 </pre></div>
 
 
-<p>If you want to do machine learning well, the most important thing is to have a large
-amount of data. This is the basis of your learning process. Without an adequate data
-set, nothing can be realized even you have a claimed strong algorithm. </p>
-<p>After you get the basic data set, you can make your hands dirty. Maybe select some
-features which can be easily inspected manually first, and formalize the data set based on the
-features you difine. From now on, the data set you have is just like the whole points
-in a n-dimension space, and what your task is to find a perfect model or function to
-put all the points on the model or near the model. From the mathematical point, the
-task is to train the data to choose the parameters of your model. What the learning
-process does is just modifying the parameters to make the cost function value
-smaller, and after a number of cycles, you can have a decent model. Therefore, the
-machine learning algorithm is about helping us modify the parameters.</p>
-<p>What the machine learning focuses on are accuracy and effiency(my unserstanding, may not
-be complete). Effiency can be tested by how many time the learning algorithm takes.
-And accuracy is checked by F score.</p>
-<p>The F score is caculated by error matrics:</p>
-<div class="highlight"><pre> <span class="n">Precision</span><span class="o">/</span><span class="n">Recall</span><span class="o">/</span><span class="n">Accuracy</span>
-      <span class="nl">predicted:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">actual</span><span class="o">:</span> <span class="mi">1</span> <span class="o">--</span> <span class="n">True</span> <span class="n">positive</span> <span class="mi">1</span>
-      <span class="nl">predicted:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">actual</span><span class="o">:</span> <span class="mi">0</span> <span class="o">--</span> <span class="n">True</span> <span class="n">negtive</span>  <span class="mi">2</span>
-      <span class="nl">predicted:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">actual</span><span class="o">:</span> <span class="mi">1</span> <span class="o">--</span> <span class="n">False</span> <span class="n">negtive</span> <span class="mi">3</span>
-      <span class="nl">predicted:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">actual</span><span class="o">:</span> <span class="mi">0</span> <span class="o">--</span> <span class="n">False</span> <span class="n">positive</span> <span class="mi">4</span>
-
- <span class="nl">Precision:</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
- <span class="nl">Recall:</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
- <span class="nl">Accuracy:</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
- <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="o">:</span> <span class="n">the</span> <span class="n">whole</span> <span class="n">data</span> <span class="n">set</span>
-
- <span class="n">F</span> <span class="n">score</span><span class="o">:</span>
- <span class="n">F</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">P</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">P</span><span class="o">+</span> <span class="n">R</span><span class="p">)</span>
+<p>const变量的定义式出现在.h文件中。此时每个包含这个.h文件的目标代码的.rodata段都会有一
+个const变量a的定义。此时每个目标代码中的变量a是相互独立的。而最终生成的可执行文件中，
+在.rodata段会有多个变量a的数据。从const的语义来考虑，不会带来运行上的错误。不过会造成
+空间的浪费。</p>
+<p>正确做法：如果这个const不是被其他文件共享的，那么应该把它定义在.cc文件中。</p>
+<p>正确做法：当一个const变量需要被多个文件使用时，采取下面的实践方法：</p>
+<div class="highlight"><pre><span class="c1">// foo.h</span>
+<span class="k">extern</span> <span class="k">const</span> <span class="k">int</span> <span class="n">a</span><span class="p">;</span>
+<span class="c1">// foo.cc</span>
+<span class="p">#</span><span class="k">include</span> <span class="s">&quot;foo.h&quot;</span>
+<span class="k">const</span> <span class="k">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mh">2</span><span class="p">;</span>
+<span class="c1">// bar.h</span>
+<span class="p">...</span>
+<span class="c1">// bar.cc</span>
+<span class="p">#</span><span class="k">include</span> <span class="s">&quot;foo.h&quot;</span>
+<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">a</span><span class="p">;</span>
 </pre></div>
 
 
-<h3>Learning Algorithm Learned</h3>
+<p>只要在一个.h文件用extern声明const变量，然后在一个.cc文件中定义这个变量即可。其他用到
+这个const变量的文件只需要include这个.h文件即可。最后的可执行文件中只有一份变量a存在。</p>
+<h2>情况2：const static ~class 变量</h2>
+<p>类似情况1，如果变量的定义式出现在.h文件中，是会有多份存在与包含这个.h文件的目标代码中
+的。这种定义其实与static的逻辑不符，下面会进行讨论。</p>
+<p>而如果像情况1的实践方法在.h文件中用extern声明，在.cc文件中定义这个变量。不会通过编译
+。很明显的extern与static是矛盾的。</p>
+<p>当然把这个变量定义在.cc文件中，只让这个变量存在与该文件的作用域中。其实和情况1一样。
+因为const的限制，这时候有没有static的声明都是一样的了。</p>
+<p>这种情况的讨论算是为了完整覆盖所有情况吧。实际考虑下，这种情况其实没有存在的意义的。
+对于static的全局变量，static的目的就是把这个变量的作用域限制在定义这个变量的文件里面
+。而当变量限制在一个文件中时，const的存在让static无法起到它的作用了。</p>
+<h2>情况3：const ~static class 变量：</h2>
+<p>正确的定义/初始化方式：</p>
 <ul>
-<li><a href="http://en.wikipedia.org/wiki/Linear_regression">linear regression</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Artificial_neural_network">neural network</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Support_vector_machine">svm</a></li>
-<li><a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a></li>
-<li><a href="http://en.wikipedia.org/wiki/Collaborative_filtering">collaborative filtering</a></li>
+<li>利用构造函数的初始化成员列表初始化，此时每个对象都有一份该变量。每个对象的该变量值
+  可以不同，但是对该对象不再改变。</li>
+<li>利用C++11 in-class initialization初始化。相当于变量的一个default value。每个对象在
+  初始化时仍然可以通过构造函数的初始化成员列表类改变它。</li>
 </ul>
-<h3>Methods to make learning better</h3>
+<p>错误的定义/初始化方式：</p>
 <ul>
-<li><a href="http://en.wikipedia.org/wiki/Feature_scaling">feature scaling</a>: standardize the
-  data range</li>
-<li>mean normalization: make the mean value 0</li>
-<li>learning rate: be adjusted while learning to make the learning converged quickly</li>
-<li><a href="http://en.wikipedia.org/wiki/Regularization_(mathematics)">regularization</a>: keep
-  the result from overfitting</li>
-<li><a href="http://en.wikipedia.org/wiki/Principal_component_analysis">principal component
-  analysis</a>: decrease data
-  occupancy, accelerate learing process, visualize data at the cost of information
-  lost</li>
-<li><a href="http://en.wikipedia.org/wiki/Anomaly_detection">anomaly detection</a>: eliminate the
-  outliers.</li>
-</ul></div>
+<li>在.h文件的class定义外初始化。</li>
+<li>在.h文件对应的.cc文件中去初始化。</li>
+</ul>
+<h2>情况4：const static class 变量：</h2>
+<p>正确的定义/初始化方式：</p>
+<ul>
+<li>在.h文件的class定义中：static const type name [=value];</li>
+<li>在.h文件对应的.cc文件中，此时必须是class定义时没有提供value：const type name
+  [=value]; 与上互补，[=value]必须在其中之一出现。</li>
+</ul>
+<p>错误的定义/初始化方式：</p>
+<ul>
+<li>在构造函数的初始化成员列表中初始化。</li>
+<li>在.h文件中class定义外初始化。</li>
+</ul>
+<p>情况4与情况3的区别在于，static的作用让该变量成为所有该类的对象共享的一个变量。</p>
+<h2>情况5：~const static ~class 变量：</h2>
+<p>静态全局变量，它的存在的意义就在于在一个文件的作用域下的全局共享变量。因此，如果在.h
+文件中定义是与变量的定义初衷相违背的。但是如果出现了这样的定义错误，编译器是无法识别
+出来的。</p>
+<p>如果在.h文件中定义，那么每个包含这个.h文件的目标代码的.data段都有一个这个变量的定义。
+不会出现重定义的编译错误。但是相同名字的该变量在每个文件中都是相互独立的。也就是说在
+一个文件中修改的该变量的值，不会对其他文件中对引用变量的地方产生任何作用。这会是一个
+逻辑错误。</p>
+<p>所以针对这种情况，正确的做法是，只在一个.cc文件中定义。</p>
+<h2>情况6：~const static class 变量：</h2>
+<p>正确的定义/初始化方法：</p>
+<ul>
+<li>在类中声明，在.cc中定义。</li>
+</ul>
+<p>错误的定义/初始化方法：</p>
+<ul>
+<li>在.h文件的class的定义外定义：如果多个文件包含这个.h文件时，会出现重定义。</li>
+<li>在class中定义：in-class initialization只对const成员变量可用。</li>
+<li>在构造函数的初始化成员列表中。</li>
+</ul>
+<p>情况6与情况4的区别就在于类成员是否是const。该类的所有对象共享一份该变量。每个对象对这
+个static变量的修改都会作用到其他对象上。</p>
+<h2>情况7：~const ~static ~class 变量：</h2>
+<p>普通的全局变量: 如果是单个文件作用域就定义在.cc文件中。如果是多个文件共享，那么在.h文
+件中extern声明，然后在某个.cc文件中定义该变量。其他文件只需要include该.h文件即可。</p>
+<h2>情况8：~const ~static class 变量：</h2>
+<p>类的普通成员变量：用构造函数的初始化成员列表初始化。</p>
+<h2>Plus: 函数中的静态变量：</h2>
+<p>上面的情况已经包含了所有的全局变量，以及类成员变量的情况。最后分析一下函数中的特殊变
+量。</p>
+<ul>
+<li>对于函数中的const变量：</li>
+</ul>
+<p>这个其实和普通函数中的局部变量一样，只是平添了const不可修改的属性而已。</p>
+<ul>
+<li>对于函数中的static变量：</li>
+</ul>
+<p>函数中的静态变量的定义方式和一般局部变量一样。只是编译器可以识别出来这句话，从而不会出现
+每次调用该函数都会执行一次这句话的情况。具体地说，就是在编译时期，编译器已经可以识别
+出来这个函数中的静态变量，然后把这个变量定义在了.data段中，而不像一般的函数中的局部变
+量定义在stack上。这样，在每次函数退出后，.data段中该变量仍然存在，并且保留修改后的值
+。而与一般.data段定义的全局变量相比，这个变量的可见范围只是在定义这个变量的函数中。</p>
+<ul>
+<li>对于函数中的const static变量：</li>
+</ul>
+<p>与上相比，定义的位置从.data变成了.rodata。具有了不可更改属性。其他的像作用域还有生命
+期都不变。</p>
+<p>希望可以把所有关于变量的声明，定义/初始化的情况都涵盖了。以后就不用再去纠结应该在哪里
+声明啊，重定义啊，未初始化啊等等的问题了。</p></div>
         <hr />
     </div>
 		
+
+ 
+        
+
+ 
+
+    <div class='article'>
+        <a href="../machine-learning-peep.html"><h2>Machine Learning Peep</h2></a>
+        <div class= "well small"> Sun 18 May 2014
+
+by <a class="url fn" href="../author/wbn.html">wbn</a>
+ 
+
+
+ </div>
+        <div class="summary"><p>Ever since few years ago, big data has stepped into our daily life as a new concept
+abruptly. Everybody, especially those starting a startup, began to talk about how to use big 
+data to improve nearly everything we have access to. Whenever you open a web page,
+you appraise a ...</p> <a class="btn btn-info xsmall" href="../machine-learning-peep.html">read more</a></div>
+    </div>	
+				
 
  
         
@@ -307,60 +345,14 @@ set operations.</p>
 <p><strong>mutable ...</strong></p></!--slug:--> <a class="btn btn-info xsmall" href="../pythonshu-ju-lei-xing-zong-jie.html">read more</a></div>
     </div>	
 				
-
- 
-        
-
- 
-
-    <div class='article'>
-        <a href="../bo-ke-da-jian.html"><h2>博客搭建</h2></a>
-        <div class= "well small"> Mon 23 September 2013
-
-by <a class="url fn" href="../author/wbn.html">wbn</a>
- 
-
-
- </div>
-        <div class="summary"><!--Slug:-->
-
-<h2>pelican 简介</h2>
-<p>之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
-。后来突然发现这个用python写的博客生成工具，虽然感觉管理没有前两者那么方便，不过因为
-python自己比较熟悉，方便hack，所以就选择它来重新搭起来自己的博客。</p>
-<p>当然，写博客的才是最关键的啦！</p>
-<h2>搭建过程及创建文章</h2>
-<h3>安装过程</h3>
-<div class="highlight"><pre><span class="n">pip</span> <span class="n">install</span> <span class="n">pelican</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">Markdown</span>
-</pre></div>
-
-
-<h3>Configuration</h3>
-<p>Just follow the promption.</p>
-<h3>博客架构</h3>
-<div class="highlight"><pre><span class="n">blog</span><span class="o">/</span>
-<span class="err">├──</span> <span class="n">content</span>              <span class="err">#</span> <span class="err">存放输入的源文件</span>
-<span class="err">│</span>   <span class="err">└──</span> <span class="p">(</span><span class="n">pages</span><span class="p">)</span>          <span class="err">#</span> <span class="err">存放手工创建的静态页面</span>
-<span class="err">├──</span> <span class="n">output</span>               <span class="err">#</span> <span class="err">生成的输出文件</span>
-<span class="err">├──</span> <span class="n">develop_server</span><span class="p">.</span><span class="n">sh</span>    <span class="err">#</span> <span class="n">make</span> <span class="n">devserver</span>
-<span class="err">├──</span> <span class="n">Makefile</span>             <span class="err">#</span> <span class="err">方便管理博客的</span><span class="n">Makefile</span>
-<span class="err">├──</span> <span class="n">pelicanconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主配置文件</span>
-<span class="err">└──</span> <span class="n">publishconf</span><span class="p">.</span><span class="n">py</span>       <span class="err">#</span> <span class="err">主发布文件</span>
-</pre></div>
-
-
-<h3>放github</h3>
-<div class="highlight"><pre><span class="n">cd ...</span></pre></div></!--slug:--> <a class="btn btn-info xsmall" href="../bo-ke-da-jian.html">read more</a></div>
-    </div>	
-				
 <div class="pagination">
 <ul>
     <li class="prev disabled"><a href="#">&larr; Previous</a></li>
 
     <li class="active"><a href="../author/wbn.html">1</a></li>
+    <li class=""><a href="../author/wbn2.html">2</a></li>
 
-    <li class="next disabled"><a href="#">&rarr; Next</a></li>
+    <li class="next"><a href="../author/wbn2.html">Next &rarr;</a></li>
 
 </ul>
 </div>
@@ -389,7 +381,6 @@ python自己比较熟悉，方便hack，所以就选择它来重新搭起来自�
                 Categories
                 </li>
                 
-                <li><a href="../category/tag.html">Tag</a></li>
                 <li><a href="../category/tech.html">Tech</a></li>
                    
             </ul>

@@ -9,14 +9,14 @@
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
-    <script src="../theme/html5.js"></script>
+    <script src="./theme/html5.js"></script>
     <![endif]-->
 
     <!-- Le styles -->
-    <link href="../theme/bootstrap.min.css" rel="stylesheet">
-    <link href="../theme/bootstrap.min.responsive.css" rel="stylesheet">
-    <link href="../theme/local.css" rel="stylesheet">
-    <link href="../theme/pygments.css" rel="stylesheet">
+    <link href="./theme/bootstrap.min.css" rel="stylesheet">
+    <link href="./theme/bootstrap.min.responsive.css" rel="stylesheet">
+    <link href="./theme/local.css" rel="stylesheet">
+    <link href="./theme/pygments.css" rel="stylesheet">
 
 </head>
 
@@ -32,12 +32,12 @@
              <span class="icon-bar"></span>
          </a>
 
-        <a class="brand" href="..">Eureka</a>
+        <a class="brand" href=".">Eureka</a>
 
         <div class="nav-collapse">
         <ul class="nav">
             
-            <li><a href="../pages/about.html">About</a></li>
+            <li><a href="./pages/about.html">About</a></li>
         </ul>
         </div>
         
@@ -54,20 +54,18 @@
 
         
 
+ 
 
     <div class='article'>
-        <div class="content-title">
-            <a href="../bo-ke-da-jian.html"><h1>博客搭建</h1></a>
-Mon 23 September 2013
+        <a href="./bo-ke-da-jian.html"><h2>博客搭建</h2></a>
+        <div class= "well small"> Mon 23 September 2013
 
-by <a class="url fn" href="../author/wbn.html">wbn</a>
+by <a class="url fn" href="./author/wbn.html">wbn</a>
  
 
 
- 
-        </div>
-        
-        <div><!--Slug:-->
+ </div>
+        <div class="summary"><!--Slug:-->
 
 <h2>pelican 简介</h2>
 <p>之前用Octopress和Jeklly都搭过博客，不过因为ruby不熟悉(借口啦)，写了没两篇慢慢就丢掉了
@@ -96,64 +94,15 @@ python自己比较熟悉，方便hack，所以就选择它来重新搭起来自�
 
 
 <h3>放github</h3>
-<div class="highlight"><pre><span class="n">cd</span> <span class="n">output</span>
-<span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="err">@</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">:</span><span class="n">username</span><span class="o">/</span><span class="n">username</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">git</span>
-</pre></div>
-
-
-<h3>文章的meta data:</h3>
-<div class="highlight"><pre><span class="n">Title</span><span class="o">:</span>
-<span class="n">Date</span><span class="o">:</span>
-<span class="n">Category</span><span class="o">:</span>
-<span class="n">Tags</span><span class="o">:</span>
-<span class="n">Slug</span><span class="o">:</span>
-</pre></div>
-
-
-<h3>生成blog</h3>
-<div class="highlight"><pre><span class="n">make</span> <span class="n">publish</span>
-<span class="n">make</span> <span class="n">github</span> <span class="p">(</span><span class="err">需要自行定义</span><span class="p">)</span>
-</pre></div>
-
-
-<h2>遇到的问题及解决方法</h2>
-<ul>
-<li>pip源速度极慢，通常会timeout</li>
-</ul>
-<p>解决方法：更换数据源。网上介绍的config文件里面定义index-url，但是使用了一直没有起作用
-。后来随便改改试试，改成index_url后发现config文件可以起到作用了。</p>
-<p><a href="http://www.leadnt.com/2013/08/使用国内镜像源来加速python-pypi包的安装/">pip源设置</a></p>
-<ul>
-<li>安装pytz包出错</li>
-</ul>
-<p>解决方法：是因为版本的问题。</p>
-<div class="highlight"><pre><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">pre</span> <span class="n">pytz</span>
-</pre></div>
-
-
-<ul>
-<li>markdown文件不识别</li>
-</ul>
-<p>解决方法：因为pelican依赖一个特定的markdwon包，注意上面安装过程的命令</p>
-<ul>
-<li>将整个output文件作为git库，但是每次make publish后，output文件都会被覆盖</li>
-</ul>
-<p>解决方法：在publishconf文件中有一个选项关于publish是否要覆盖output文件的，更改即可。</p>
-<h2>Reference</h2>
-<ol>
-<li><a href="http://www.lizherui.com/pages/2013/08/17/build_blog.html">首先发现pelican的地方</a></li>
-<li><a href="http://docs.getpelican.com/en/3.2/">官网啦</a></li>
-<li><a href="http://akenzc.com/how-to-build-a-blog-with-pelican.html">另一个详细的搭建介绍</a></li>
-<li><a href="http://www.dongwm.com/archives/shi-yong-pelicanxin-de/">供参考的文章书写管理脚本</a></li>
-</ol></div>
-        <hr />
-    </div>
-		
+<div class="highlight"><pre><span class="n">cd ...</span></pre></div></!--slug:--> <a class="btn btn-info xsmall" href="./bo-ke-da-jian.html">read more</a></div>
+    </div>	
+				
 <div class="pagination">
 <ul>
-    <li class="prev disabled"><a href="#">&larr; Previous</a></li>
+    <li class="prev"><a href="./index.html">&larr; Previous</a></li>
 
-    <li class="active"><a href="../tag/pelican.html">1</a></li>
+    <li class=""><a href="./index.html">1</a></li>
+    <li class="active"><a href="./index2.html">2</a></li>
 
     <li class="next disabled"><a href="#">&rarr; Next</a></li>
 
@@ -171,8 +120,8 @@ python自己比较熟悉，方便hack，所以就选择它来重新搭起来自�
                 Site
                 </li>
             
-                <li><a href="../">Archives</a>
-                <li><a href="../tags.html">Tags</a>
+                <li><a href="./">Archives</a>
+                <li><a href="./tags.html">Tags</a>
                 <li><a href="http://nanadair.github.io/" rel="alternate">Atom feed</a></li>
             </ul>
             </div>
@@ -184,7 +133,7 @@ python自己比较熟悉，方便hack，所以就选择它来重新搭起来自�
                 Categories
                 </li>
                 
-                <li><a href="../category/tech.html">Tech</a></li>
+                <li><a href="./category/tech.html">Tech</a></li>
                    
             </ul>
             </div>
@@ -210,7 +159,7 @@ python自己比较熟悉，方便hack，所以就选择它来重新搭起来自�
     </div>     </div> 
 <footer>
 <br />
-<p><a href="..">Eureka</a> &copy; wbn 2012</p>
+<p><a href=".">Eureka</a> &copy; wbn 2012</p>
 </footer>
 
 </div> <!-- /container -->
